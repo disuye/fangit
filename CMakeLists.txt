@@ -8,14 +8,7 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Network)
 
-# Fetch toml11 for TOML config parsing
-include(FetchContent)
-FetchContent_Declare(
-    toml11
-    GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
-    GIT_TAG        v4.4.0
-)
-FetchContent_MakeAvailable(toml11)
+# toml11 — vendored headers in third_party/toml11/
 
 set(SOURCES
     src/main.cpp
@@ -54,5 +47,8 @@ else()
     qt_add_executable(fangit ${SOURCES})
 endif()
 
-target_include_directories(fangit PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(fangit PRIVATE Qt6::Core Qt6::Widgets Qt6::Network toml11::toml11)
+target_include_directories(fangit PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/third_party/toml11
+)
+target_link_libraries(fangit PRIVATE Qt6::Core Qt6::Widgets Qt6::Network)

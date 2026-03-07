@@ -1277,10 +1277,6 @@ fangit_autogen/timestamp: \
 	/opt/homebrew/share/cmake/Modules/Compiler/XL-CXX-DetermineCompiler.cmake \
 	/opt/homebrew/share/cmake/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake \
 	/opt/homebrew/share/cmake/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake \
-	/opt/homebrew/share/cmake/Modules/ExternalProject/shared_internal_commands.cmake \
-	/opt/homebrew/share/cmake/Modules/FetchContent.cmake \
-	/opt/homebrew/share/cmake/Modules/FetchContent/CMakeLists.cmake.in \
-	/opt/homebrew/share/cmake/Modules/FindGit.cmake \
 	/opt/homebrew/share/cmake/Modules/FindOpenGL.cmake \
 	/opt/homebrew/share/cmake/Modules/FindPackageHandleStandardArgs.cmake \
 	/opt/homebrew/share/cmake/Modules/FindPackageMessage.cmake \

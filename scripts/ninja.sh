@@ -21,9 +21,6 @@ QT_PATH="$HOME/Qt/6.10.1/macos"
 # QT_PATH="$HOME/Qt/6.7.3/macos"
 
 
-# Go...
-rm -rf $BUILD_DIR
-
 # Parse arguments
 case "$1" in
     clean)

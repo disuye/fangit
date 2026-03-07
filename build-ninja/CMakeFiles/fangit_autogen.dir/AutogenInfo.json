@@ -439,12 +439,6 @@
 		"/Users/disuye/Qt/6.10.1/macos/lib/cmake/Qt6Network/Qt6QTlsBackendOpenSSLPluginTargets-relwithdebinfo.cmake",
 		"/Users/disuye/Qt/6.10.1/macos/lib/cmake/Qt6Network/Qt6QTlsBackendOpenSSLPluginAdditionalTargetInfo.cmake",
 		"/Users/disuye/Qt/6.10.1/macos/lib/cmake/Qt6Network/Qt6NetworkVersionlessAliasTargets.cmake",
-		"/opt/homebrew/share/cmake/Modules/FetchContent.cmake",
-		"/opt/homebrew/share/cmake/Modules/ExternalProject/shared_internal_commands.cmake",
-		"/opt/homebrew/share/cmake/Modules/FindGit.cmake",
-		"/opt/homebrew/share/cmake/Modules/FindPackageHandleStandardArgs.cmake",
-		"/opt/homebrew/share/cmake/Modules/FindPackageMessage.cmake",
-		"/opt/homebrew/share/cmake/Modules/FetchContent/CMakeLists.cmake.in",
 		"/Users/disuye/Files+Work/VSCode/fangit/macos/Info.plist",
 		"/Users/disuye/Files+Work/VSCode/fangit/src/resources.qrc"
 	],
@@ -505,7 +499,7 @@
 	"MOC_INCLUDES" : 
 	[
 		"/Users/disuye/Files+Work/VSCode/fangit/src",
-		"/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include",
+		"/Users/disuye/Files+Work/VSCode/fangit/third_party/toml11",
 		"/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers",
 		"/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework",
 		"/Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang",
