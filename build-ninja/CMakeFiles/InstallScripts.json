@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/disuye/Files+Work/VSCode/fangit/build-ninja/cmake_install.cmake",
+		"/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-build/cmake_install.cmake",
+		"/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-build/src/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,56 @@
+[
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/mocs_compilation.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/mocs_compilation.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/src/main.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/src/main.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/src/main.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/src/TrayManager.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/src/TrayManager.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/src/TrayManager.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/src/TrayManager.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/src/ConfigManager.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/src/ConfigManager.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/src/ConfigManager.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/src/ConfigManager.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/src/WatcherManager.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/src/WatcherManager.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/src/WatcherManager.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/src/WatcherManager.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/src/GitManager.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/src/GitManager.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/src/GitManager.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/src/GitManager.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/src/CommitBatcher.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/src/CommitBatcher.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/src/CommitBatcher.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/src/CommitBatcher.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/src/WorkflowManager.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/src/WorkflowManager.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o"
+},
+{
+  "directory": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-src/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers -g -std=gnu++17 -arch arm64 -o CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o -c /Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/UVLADIE3JM/qrc_resources.cpp",
+  "file": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/UVLADIE3JM/qrc_resources.cpp",
+  "output": "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o"
+}
+]

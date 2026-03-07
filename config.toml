@@ -1,0 +1,39 @@
+# fangit configuration
+# Place at: ~/Library/Application Support/fangit/config.toml
+
+[general]
+# GitHub username to @mention in push notifications
+github_user = "disuye"
+
+# Debounce interval in seconds before committing (30-300)
+batch_interval = 60
+
+[repo]
+# Remote repository URL (HTTPS or SSH)
+url = "https://github.com/disuye/disuyebot.git"
+
+# Local clone path (managed by fangit)
+# Defaults to ~/Library/Application Support/fangit/repo
+# local_path = ""
+
+# Default branch
+branch = "main"
+
+# Auth method: "https" or "ssh"
+auth = "https"
+
+# Poll interval for pull/sync mode in seconds (future)
+# poll_interval = 60
+
+# Watch directories — one entry per monitored folder
+[[watch]]
+name = "SMPLR"
+path = "~/fangit/SMPLR"
+emoji = "🎵"
+# Optional: only watch specific file extensions
+# extensions = ["txt", "json", "log"]
+
+[[watch]]
+name = "SomeScript"
+path = "~/fangit/SomeScript"
+emoji = "📝"

@@ -1,0 +1,14 @@
+# Target labels
+ toml11-populate
+# Source files and their labels
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/CMakeFiles/toml11-populate
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/CMakeFiles/toml11-populate.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/CMakeFiles/toml11-populate-complete.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-build.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-configure.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-download.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-install.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-mkdir.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-patch.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-test.rule
+/Users/disuye/Files+Work/VSCode/fangit/build-ninja/_deps/toml11-subbuild/toml11-populate-prefix/src/toml11-populate-stamp/toml11-populate-update.rule

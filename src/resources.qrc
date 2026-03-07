@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="fonts/FiraCode-Variable.ttf">../fonts/FiraCode-VariableFont_wght.ttf</file>
+        <file alias="images/AppIcon.png">../images/AppIcon.png</file>
+    </qresource>
+</RCC>

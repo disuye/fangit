@@ -1,0 +1,26 @@
+{
+	"BUILD_DIR" : "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen",
+	"CMAKE_BINARY_DIR" : "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+	"CMAKE_CURRENT_BINARY_DIR" : "/Users/disuye/Files+Work/VSCode/fangit/build-ninja",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/Users/disuye/Files+Work/VSCode/fangit",
+	"CMAKE_SOURCE_DIR" : "/Users/disuye/Files+Work/VSCode/fangit",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "Ninja",
+	"INCLUDE_DIR" : "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include",
+	"INPUTS" : 
+	[
+		"/Users/disuye/Files+Work/VSCode/fangit/images/AppIcon.png",
+		"/Users/disuye/Files+Work/VSCode/fangit/fonts/FiraCode-VariableFont_wght.ttf"
+	],
+	"LOCK_FILE" : "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit_autogen.dir/AutoRcc_resources_UVLADIE3JM_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "--no-zstd", "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "UVLADIE3JM",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "/Users/disuye/Qt/6.10.1/macos/libexec/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit_autogen.dir/AutoRcc_resources_UVLADIE3JM_Used.txt",
+	"SOURCE" : "/Users/disuye/Files+Work/VSCode/fangit/src/resources.qrc",
+	"USE_BETTER_GRAPH" : true,
+	"VERBOSITY" : 0
+}

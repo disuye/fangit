@@ -1,0 +1,24 @@
+# ninja log v7
+1	7	1772926068503340034	fangit.app/Contents/Resources/AppIcon.icns	d0ee58bf78d29326
+0	304	1772926068797392855	fangit_autogen/timestamp	e567d0cef93c39d7
+0	304	1772926068797392855	fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+0	304	1772926068797392855	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/timestamp	e567d0cef93c39d7
+0	304	1772926068797392855	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+305	337	1772926068837819394	fangit_autogen/UVLADIE3JM/qrc_resources.cpp	87fc2faa8ceb9e42
+305	337	1772926068837819394	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/UVLADIE3JM/qrc_resources.cpp	87fc2faa8ceb9e42
+338	560	1772926068840503138	CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o	c444eb15eff53650
+337	999	1772926068840164650	CMakeFiles/fangit.dir/src/GitManager.cpp.o	e0bea51dbc7eef9f
+338	1047	1772926068840266063	CMakeFiles/fangit.dir/src/CommitBatcher.cpp.o	2f9ccefb1b9b9be5
+338	1097	1772926068840397975	CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o	5806e303f8a4602a
+337	1100	1772926068840046445	CMakeFiles/fangit.dir/src/WatcherManager.cpp.o	4b0373a6e061aeee
+337	1111	1772926068839714081	CMakeFiles/fangit.dir/src/main.cpp.o	360c555c2966f77d
+337	1137	1772926068839536004	CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o	cc2e77b66f458905
+337	1718	1772926068839909200	CMakeFiles/fangit.dir/src/ConfigManager.cpp.o	53a1e60572d70d18
+4	221	1772926089993406000	fangit_autogen/timestamp	e567d0cef93c39d7
+4	221	1772926089993406000	fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+4	221	1772926089993406000	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/timestamp	e567d0cef93c39d7
+4	221	1772926089993406000	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+222	933	1772926090002945649	CMakeFiles/fangit.dir/src/main.cpp.o	360c555c2966f77d
+222	959	1772926090003060186	CMakeFiles/fangit.dir/src/TrayManager.cpp.o	c2d9dd2fd4ae529d
+222	960	1772926090002746572	CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o	cc2e77b66f458905
+960	1048	1772926090740588057	fangit.app/Contents/MacOS/fangit	b4802a5035178bc4

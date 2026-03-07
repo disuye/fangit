@@ -35,7 +35,7 @@ case "$1" in
         ;;
 esac
 
-VERSION=$(sed -n 's/.*VERSION_STR "\([^"]*\)".*/\1/p' "$PROJECT_DIR/src/MainWindow.h")
+VERSION=$(sed -n 's/.*VERSION_STR "\([^"]*\)".*/\1/p' "$PROJECT_DIR/src/main.cpp")
 DMG_NAME="fangitv${VERSION}.dmg"
 
 echo "Building $ARCH_LABEL Release (v${VERSION})..."
