@@ -1,0 +1,19 @@
+# ninja log v7
+2	8	1772991256946245173	fangit.app/Contents/Resources/AppIcon.icns	d0ee58bf78d29326
+1	388	1772991257322662246	fangit_autogen/timestamp	6652a0bd959f13f0
+1	388	1772991257322662246	fangit_autogen/mocs_compilation.cpp	6652a0bd959f13f0
+1	388	1772991257322662246	/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/fangit_autogen/timestamp	6652a0bd959f13f0
+1	388	1772991257322662246	/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/fangit_autogen/mocs_compilation.cpp	6652a0bd959f13f0
+390	427	1772991257369885463	fangit_autogen/UVLADIE3JM/qrc_resources.cpp	b09a10afb66cbacc
+390	427	1772991257369885463	/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/fangit_autogen/UVLADIE3JM/qrc_resources.cpp	b09a10afb66cbacc
+428	856	1772991257372709740	CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o	b8f1c472456d65c3
+428	2170	1772991257372419867	CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o	7a688b358a4d937
+427	2192	1772991257372131493	CMakeFiles/fangit.dir/src/GitManager.cpp.o	89c4aeebe22162de
+427	2282	1772991257371640037	CMakeFiles/fangit.dir/src/main.cpp.o	8f9898d2b498ea01
+428	2331	1772991257372287826	CMakeFiles/fangit.dir/src/CommitBatcher.cpp.o	9dc03696b2ebec4
+428	2360	1772991257372539908	CMakeFiles/fangit.dir/src/NotifyManager.cpp.o	8dfc37240d4f8936
+427	2377	1772991257371440747	CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o	97722a0c10ccf983
+427	2458	1772991257371747578	CMakeFiles/fangit.dir/src/TrayManager.cpp.o	665013a1f687049f
+427	2597	1772991257371945328	CMakeFiles/fangit.dir/src/WatcherManager.cpp.o	5ac0e329dfc96b56
+427	9033	1772991257371844661	CMakeFiles/fangit.dir/src/ConfigManager.cpp.o	b747dc490ec8d97f
+9033	9197	1772991265977584755	fangit.app/Contents/MacOS/fangit	961c205c030aa462

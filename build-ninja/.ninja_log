@@ -17,3 +17,9 @@
 332	1211	1772989576658601683	CMakeFiles/fangit.dir/src/TrayManager.cpp.o	4debcb5bff8df55e
 332	1801	1772989576658714974	CMakeFiles/fangit.dir/src/ConfigManager.cpp.o	5d37447a83d0d0a3
 1802	1882	1772989578128315234	fangit.app/Contents/MacOS/fangit	d68a6b642f646db8
+7	48	1772991252477920660	fangit_autogen/timestamp	e567d0cef93c39d7
+7	48	1772991252477920660	fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+7	48	1772991252477920660	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/timestamp	e567d0cef93c39d7
+7	48	1772991252477920660	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+48	868	1772991252518491120	CMakeFiles/fangit.dir/src/main.cpp.o	125afde197403118
+868	959	1772991253338307841	fangit.app/Contents/MacOS/fangit	d68a6b642f646db8
