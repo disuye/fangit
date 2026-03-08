@@ -50,8 +50,15 @@ bool ConfigManager::load()
                 m_batchInterval = qBound(30, toml::find<int>(gen, "batch_interval"), 300);
             if (gen.contains("scan_interval"))
                 m_scanInterval = qBound(10, toml::find<int>(gen, "scan_interval"), 300);
-            if (gen.contains("use_icon_logo"))
-                m_useIconLogo = toml::find<bool>(gen, "use_icon_logo");
+            if (gen.contains("tray_style")) {
+            std::string style = toml::find<std::string>(gen, "tray_style");
+            if (style == "logo")
+                m_trayStyle = TrayStyle::Logo;
+            else if (style == "tint")
+                m_trayStyle = TrayStyle::Tint;
+            else
+                m_trayStyle = TrayStyle::Dot;
+            }
         }
 
         // [repo]
@@ -156,7 +163,10 @@ bool ConfigManager::save()
     out << "github_user = \"" << m_githubUser << "\"\n";
     out << "batch_interval = " << m_batchInterval << "  # seconds before committing (30-300)\n";
     out << "scan_interval = " << m_scanInterval << "   # filesystem scan interval (10-300)\n";
-    out << "use_icon_logo = " << (m_useIconLogo ? "true" : "false") << "  # true = app icon, false = dot indicator\n";
+    QString styleStr = "dot";
+    if (m_trayStyle == TrayStyle::Logo) styleStr = "logo";
+    else if (m_trayStyle == TrayStyle::Tint) styleStr = "tint";
+    out << "tray_style = \"" << styleStr << "\"  # \"dot\" | \"logo\" | \"tint\"\n";
     out << "\n";
     out << "[repo]\n";
     out << "url = \"" << m_repoUrl << "\"\n";

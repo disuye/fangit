@@ -30,7 +30,8 @@ public:
     QString githubUser() const { return m_githubUser; }
     int batchInterval() const { return m_batchInterval; }
     int scanInterval() const { return m_scanInterval; }
-    bool useIconLogo() const { return m_useIconLogo; }
+    enum class TrayStyle { Dot, Logo, Tint };
+    TrayStyle trayStyle() const { return m_trayStyle; }
 
     // Accessors — repo
     QString repoUrl() const { return m_repoUrl; }
@@ -68,7 +69,7 @@ private:
     QString m_githubUser;
     int m_batchInterval = 60;
     int m_scanInterval = 30;      // filesystem scan interval (10–300s)
-    bool m_useIconLogo = false;   // false = dot indicator, true = app icon with tint
+    TrayStyle m_trayStyle = TrayStyle::Dot;
 
     // Repo
     QString m_repoUrl;

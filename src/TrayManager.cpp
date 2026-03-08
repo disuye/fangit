@@ -168,9 +168,14 @@ void TrayManager::setState(TrayState state)
 
 QIcon TrayManager::stateIcon(TrayState state) const
 {
-    if (m_config.useIconLogo() && !m_trayTemplate.isNull())
-        return logoIcon(state);
-    return dotIcon(state);
+    if (m_trayTemplate.isNull())
+        return dotIcon(state);
+
+    switch (m_config.trayStyle()) {
+        case ConfigManager::TrayStyle::Logo: return logoIcon(state);
+        case ConfigManager::TrayStyle::Tint: return tintIcon(state);
+        default:                             return dotIcon(state);
+    }
 }
 
 QColor TrayManager::stateColor(TrayState state) const
@@ -237,6 +242,19 @@ QIcon TrayManager::logoIcon(TrayState state) const
     // and let the white PNG work naturally in both modes.
     // TODO: Use Objective-C bridge to call [nsImage setTemplate:YES]
 #endif
+
+    return QIcon(icon);
+}
+
+QIcon TrayManager::tintIcon(TrayState state) const
+{
+    int size = 44;
+    QPixmap icon = m_trayTemplate.scaled(size, size,
+        Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    QPainter painter(&icon);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.fillRect(icon.rect(), stateColor(state));
 
     return QIcon(icon);
 }

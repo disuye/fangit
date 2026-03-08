@@ -49,6 +49,7 @@ private:
     QIcon stateIcon(TrayState state) const;
     QIcon dotIcon(TrayState state) const;
     QIcon logoIcon(TrayState state) const;
+    QIcon tintIcon(TrayState state) const;
     QColor stateColor(TrayState state) const;
 
     ConfigManager &m_config;
