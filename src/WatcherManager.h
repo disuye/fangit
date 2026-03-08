@@ -24,8 +24,8 @@ public:
     bool isPaused() const { return m_paused; }
 
 signals:
-    // Emits the watch name + list of changed/new file paths (relative to watch dir)
-    void filesChanged(const QString &pathName, const QString &emoji, const QStringList &files);
+    void filesChanged(const QString &pathName, const QString &emoji,
+                      const QString &action, const QStringList &files);
     void watchError(const QString &pathName, const QString &error);
 
 private slots:
@@ -33,7 +33,8 @@ private slots:
     void onScanTimer();
 
 private:
-    void scanDirectory(const QString &watchPath, const QString &pathName, const QString &emoji);
+    void scanDirectory(const QString &watchPath, const QString &pathName,
+                       const QString &emoji, const QString &action);
 
     QFileSystemWatcher m_watcher;
     QTimer m_scanTimer;

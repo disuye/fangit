@@ -42,12 +42,16 @@ path_name = "Desktop Test"
 # emoji = "☠️"
 path = "~/Desktop/fangit-test"
 extensions = ["txt", "json"]
+action = "sync"
 
 # [[watch]]
-# path_name = "Repo Folder Name"        # required — unique ID + repo subdirectory
-# emoji = "📁"				# optional
+# path_name = "Repo Folder Name"    # required — unique ID + repo subdirectory
+# emoji = "📁"				        # optional
 # path = "~/Desktop/path-to-watch"	# required – path to watch folder
 # extensions = ["txt", "json"]  	# optional – which files trigger fangit
+# action = "sync"                   # optional, "sync" [default; puhses watch folder 
+                                    # up to git] | "path name" disables sync and sends
+                                    # notification to [[channel]] matches "patch name"
 
 
 # ─────────────────────────────────────────────────────────────────

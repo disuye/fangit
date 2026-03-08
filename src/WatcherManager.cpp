@@ -104,7 +104,8 @@ void WatcherManager::onDirectoryChanged(const QString &path)
     // Find which watch this belongs to
     for (auto &info : m_watches) {
         if (path.startsWith(info.entry.path)) {
-            scanDirectory(info.entry.path, info.entry.pathName, info.entry.emoji);
+            scanDirectory(info.entry.path, info.entry.pathName,
+                         info.entry.emoji, info.entry.action);
             break;
         }
     }
@@ -120,11 +121,13 @@ void WatcherManager::onScanTimer()
 
     for (const auto &key : m_watches.keys()) {
         auto &info = m_watches[key];
-        scanDirectory(info.entry.path, info.entry.pathName, info.entry.emoji);
+        scanDirectory(info.entry.path, info.entry.pathName,
+                     info.entry.emoji, info.entry.action);
     }
 }
 
-void WatcherManager::scanDirectory(const QString &watchPath, const QString &pathName, const QString &emoji)
+void WatcherManager::scanDirectory(const QString &watchPath, const QString &pathName,
+                                    const QString &emoji, const QString &action)
 {
     auto &info = m_watches[watchPath];
     QStringList changedFiles;
@@ -169,6 +172,6 @@ void WatcherManager::scanDirectory(const QString &watchPath, const QString &path
 
     if (!changedFiles.isEmpty()) {
         qDebug() << "Changes detected in" << pathName << ":" << changedFiles.size() << "file(s)";
-        emit filesChanged(pathName, emoji, changedFiles);
+        emit filesChanged(pathName, emoji, action, changedFiles);
     }
 }

@@ -12,6 +12,7 @@ struct WatchEntry {
     QString pathName;   // required — unique ID, also used as repo subdirectory name
     QString path;
     QString emoji;
+    QString action;     // "sync" (default) or a channel path_name for notify routing
     QStringList extensions; // optional filter
 };
 

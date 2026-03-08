@@ -12,7 +12,7 @@
 #include "NotifyManager.h"
 #include "TrayManager.h"
 
-#define VERSION_STR "0.0.2"
+#define VERSION_STR "0.0.3"
 
 int main(int argc, char *argv[])
 {
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     ConfigManager configManager;
     GitManager gitManager(configManager);
     WatcherManager watcherManager;
-    CommitBatcher commitBatcher(gitManager, configManager);
+    CommitBatcher commitBatcher(gitManager, configManager, notifyManager);
     WorkflowManager workflowManager(gitManager, configManager);
     NotifyManager notifyManager(configManager);
 
@@ -72,10 +72,28 @@ int main(int argc, char *argv[])
                             commitBatcher, workflowManager, notifyManager);
     trayManager.show();
 
-    // Start watching configured directories (only if repo is ready)
-    if (gitManager.isRepoCloned() && !configManager.watchEntries().isEmpty()) {
-        watcherManager.startWatching(configManager.watchEntries(),
-                                     configManager.scanInterval());
+    // Start watching configured directories
+    // Sync watches need the repo cloned; notify-only watches work without it
+    if (!configManager.watchEntries().isEmpty()) {
+        bool repoReady = gitManager.isRepoCloned();
+        bool hasNotifyOnly = false;
+
+        // Check if there are any notify-only watches that can start without repo
+        for (const auto &entry : configManager.watchEntries()) {
+            bool isNotify = false;
+            for (const auto &ch : configManager.channels()) {
+                if (ch.pathName == entry.action) {
+                    isNotify = true;
+                    break;
+                }
+            }
+            if (isNotify) hasNotifyOnly = true;
+        }
+
+        if (repoReady || hasNotifyOnly) {
+            watcherManager.startWatching(configManager.watchEntries(),
+                                         configManager.scanInterval());
+        }
     }
 
     return app.exec();

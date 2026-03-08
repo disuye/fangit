@@ -1,16 +1,19 @@
 #include "CommitBatcher.h"
 #include "GitManager.h"
 #include "ConfigManager.h"
+#include "NotifyManager.h"
 
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
 
-CommitBatcher::CommitBatcher(GitManager &git, ConfigManager &config, QObject *parent)
+CommitBatcher::CommitBatcher(GitManager &git, ConfigManager &config,
+                             NotifyManager &notify, QObject *parent)
     : QObject(parent)
     , m_git(git)
     , m_config(config)
+    , m_notify(notify)
 {
     m_debounceTimer.setSingleShot(true);
     connect(&m_debounceTimer, &QTimer::timeout, this, &CommitBatcher::onTimerFired);
@@ -24,11 +27,13 @@ int CommitBatcher::pendingCount() const
     return total;
 }
 
-void CommitBatcher::enqueueFiles(const QString &pathName, const QString &emoji, const QStringList &files)
+void CommitBatcher::enqueueFiles(const QString &pathName, const QString &emoji,
+                                  const QString &action, const QStringList &files)
 {
     auto &batch = m_pending[pathName];
     batch.pathName = pathName;
     batch.emoji = emoji;
+    batch.action = action;
 
     for (const auto &f : files) {
         if (!batch.files.contains(f))
@@ -47,6 +52,20 @@ void CommitBatcher::pushNow()
     onTimerFired();
 }
 
+// Check if the action string matches any configured channel path_name
+bool CommitBatcher::isNotifyAction(const QString &action) const
+{
+    if (action.isEmpty() || action == "sync")
+        return false;
+
+    const auto &channels = m_config.channels();
+    for (const auto &ch : channels) {
+        if (ch.pathName == action)
+            return true;
+    }
+    return false;
+}
+
 void CommitBatcher::onTimerFired()
 {
     if (m_pending.isEmpty()) return;
@@ -54,34 +73,22 @@ void CommitBatcher::onTimerFired()
     emit batchStarted();
 
     bool allSuccess = true;
+    bool hasSyncBatches = false;
 
-    // Process each watch's pending files as a separate commit
+    // Route each batch based on its action
     for (auto it = m_pending.begin(); it != m_pending.end(); ++it) {
         const PendingBatch &batch = it.value();
 
-        // Copy files from watch directory into repo subdirectory
-        copyFilesToRepo(batch);
-
-        // Stage the files in the repo
-        QStringList repoFiles;
-        for (const auto &f : batch.files)
-            repoFiles.append(batch.pathName + "/" + f);
-
-        if (!m_git.add(repoFiles)) {
-            allSuccess = false;
-            continue;
-        }
-
-        // Commit
-        QString msg = formatCommitMessage(batch);
-        if (!m_git.commit(msg)) {
-            allSuccess = false;
-            continue;
+        if (isNotifyAction(batch.action)) {
+            processNotifyBatch(batch);
+        } else {
+            processSyncBatch(batch, allSuccess);
+            hasSyncBatches = true;
         }
     }
 
-    // Push all commits
-    if (allSuccess || pendingCount() > 0) {
+    // Push all sync commits in one go
+    if (hasSyncBatches) {
         if (!m_git.push())
             allSuccess = false;
     }
@@ -91,44 +98,61 @@ void CommitBatcher::onTimerFired()
     emit batchFinished(allSuccess);
 }
 
-void CommitBatcher::copyFilesToRepo(const PendingBatch &batch)
+// ── Sync route: git add + commit ───────────────────────────────────────────
+
+void CommitBatcher::processSyncBatch(const PendingBatch &batch, bool &allSuccess)
 {
-    QString repoBase = m_config.repoLocalPath();
+    copyFilesToRepo(batch);
 
-    // Find the original watch path from config
-    QString watchPath;
-    for (const auto &entry : m_config.watchEntries()) {
-        if (entry.pathName == batch.pathName) {
-            watchPath = entry.path;
-            break;
-        }
-    }
+    QStringList repoFiles;
+    for (const auto &f : batch.files)
+        repoFiles.append(batch.pathName + "/" + f);
 
-    if (watchPath.isEmpty()) {
-        qWarning() << "Cannot find watch path for" << batch.pathName;
+    if (!m_git.add(repoFiles)) {
+        allSuccess = false;
         return;
     }
 
-    // Copy each file
-    for (const auto &relFile : batch.files) {
-        QString srcPath = watchPath + "/" + relFile;
-        QString dstPath = repoBase + "/" + batch.pathName + "/" + relFile;
-
-        QDir().mkpath(QFileInfo(dstPath).absolutePath());
-
-        // Remove destination if exists (overwrite)
-        if (QFile::exists(dstPath))
-            QFile::remove(dstPath);
-
-        if (!QFile::copy(srcPath, dstPath)) {
-            qWarning() << "Failed to copy" << srcPath << "to" << dstPath;
-        }
+    QString msg = formatCommitMessage(batch);
+    if (!m_git.commit(msg)) {
+        allSuccess = false;
     }
+}
+
+// ── Notify route: send filenames via channel, no git ───────────────────────
+
+void CommitBatcher::processNotifyBatch(const PendingBatch &batch)
+{
+    QString message = formatNotifyMessage(batch);
+    m_notify.notify(batch.action, message);
+
+    qDebug() << "Notify routed:" << batch.pathName
+             << "→ channel" << batch.action
+             << "(" << batch.files.size() << "files)";
+}
+
+// ── Message formatting ─────────────────────────────────────────────────────
+
+QString CommitBatcher::formatNotifyMessage(const PendingBatch &batch) const
+{
+    QString emoji = batch.emoji.isEmpty() ? QString::fromUtf8("\xF0\x9F\x93\x81") : batch.emoji;
+
+    if (batch.files.size() == 1) {
+        return emoji + " " + batch.pathName + ": " + batch.files.first();
+    }
+
+    QString msg = emoji + " " + batch.pathName + ": " + QString::number(batch.files.size()) + " file(s)";
+    // Include filenames for small batches
+    if (batch.files.size() <= 5) {
+        for (const auto &f : batch.files)
+            msg += "\n  " + f;
+    }
+    return msg;
 }
 
 QString CommitBatcher::formatCommitMessage(const PendingBatch &batch) const
 {
-    QString emoji = batch.emoji.isEmpty() ? QString::fromUtf8("\xF0\x9F\x93\x81") : batch.emoji; // default: folder emoji
+    QString emoji = batch.emoji.isEmpty() ? QString::fromUtf8("\xF0\x9F\x93\x81") : batch.emoji;
 
     // Resolve full path for file size calculation
     QString watchPath;
@@ -157,4 +181,38 @@ QString CommitBatcher::formatCommitMessage(const PendingBatch &batch) const
         msg += "\n\xe2\x80\xa2 " + f;
     }
     return msg;
+}
+
+// ── File copy (sync mode only) ─────────────────────────────────────────────
+
+void CommitBatcher::copyFilesToRepo(const PendingBatch &batch)
+{
+    QString repoBase = m_config.repoLocalPath();
+
+    QString watchPath;
+    for (const auto &entry : m_config.watchEntries()) {
+        if (entry.pathName == batch.pathName) {
+            watchPath = entry.path;
+            break;
+        }
+    }
+
+    if (watchPath.isEmpty()) {
+        qWarning() << "Cannot find watch path for" << batch.pathName;
+        return;
+    }
+
+    for (const auto &relFile : batch.files) {
+        QString srcPath = watchPath + "/" + relFile;
+        QString dstPath = repoBase + "/" + batch.pathName + "/" + relFile;
+
+        QDir().mkpath(QFileInfo(dstPath).absolutePath());
+
+        if (QFile::exists(dstPath))
+            QFile::remove(dstPath);
+
+        if (!QFile::copy(srcPath, dstPath)) {
+            qWarning() << "Failed to copy" << srcPath << "to" << dstPath;
+        }
+    }
 }
