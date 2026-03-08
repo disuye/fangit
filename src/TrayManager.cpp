@@ -308,65 +308,13 @@ void TrayManager::onOpenConfig()
 {
     QString configPath = m_config.configFilePath();
 
-    // Create default config if it doesn't exist
     if (!QFileInfo::exists(configPath)) {
         QDir().mkpath(QFileInfo(configPath).absolutePath());
-        QFile file(configPath);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream out(&file);
-            out << "# fangit configuration\n"
-                << "# https://github.com/disuye/fangit\n"
-                << "\n"
-                << "[general]\n"
-                << "# GitHub username to @mention in notifications\n"
-                << "github_user = \"\"\n"
-                << "\n"
-                << "# Seconds before committing watched file changes (30-300)\n"
-                << "batch_interval = 60\n"
-                << "\n"
-                << "# Filesystem scan interval in seconds (10-300)\n"
-                << "# Lower = faster detection, higher = less CPU\n"
-                << "scan_interval = 30\n"
-                << "\n"
-                << "# Tray icon style: false = colored dot, true = app icon with status tint\n"
-                << "use_icon_logo = false\n"
-                << "\n"
-                << "[repo]\n"
-                << "# Remote repository URL (HTTPS or SSH)\n"
-                << "url = \"\"\n"
-                << "\n"
-                << "# Default branch\n"
-                << "branch = \"main\"\n"
-                << "\n"
-                << "# Auth method: \"https\" or \"ssh\"\n"
-                << "auth = \"https\"\n"
-                << "\n"
-                << "# ── Watch directories ────────────────────────────────────────────\n"
-                << "# Sync mode: watches a folder, commits + pushes file changes to repo.\n"
-                << "# Triggers iOS notification via GitHub Actions (~45-60s).\n"
-                << "#\n"
-                << "# [[watch]]\n"
-                << "# path_name = \"MyApp\"         # required — unique ID + repo subdirectory\n"
-                << "# path = \"~/path/to/folder\"\n"
-                << "# emoji = \"📁\"\n"
-                << "# extensions = [\"txt\", \"json\"]  # optional file filter\n"
-                << "\n"
-                << "# ── Notification channels ────────────────────────────────────────\n"
-                << "# Notify mode: posts a message to a GitHub issue, no files involved.\n"
-                << "#\n"
-                << "# mode = \"dispatch\"  -> via GitHub Action, single account (~35s)\n"
-                << "# mode = \"direct\"   -> direct API post, needs 2nd account (~20s)\n"
-                << "#\n"
-                << "# action = \"notify\"       -> notification only\n"
-                << "# action = \"notify+push\"  -> notification + push push_dir to repo\n"
-                << "#\n"
-                << "# [[channel]]\n"
-                << "# path_name = \"status\"       # required — unique channel ID\n"
-                << "# issue = 1                  # GitHub issue number to post to\n"
-                << "# emoji = \"🟢\"\n"
-                << "# mode = \"dispatch\"\n"
-                << "# action = \"notify\"\n";
-            file.close();
+        QFile defaultConfig(":/config/default.toml");
+        if (defaultConfig.open(QIODevice::ReadOnly)) {
+            QFile out(configPath);
+            if (out.open(QIODevice::WriteOnly))
+                out.write(defaultConfig.readAll());
         }
     }
 

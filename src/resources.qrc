@@ -3,5 +3,6 @@
         <file alias="fonts/FiraCode-Variable.ttf">../fonts/FiraCode-VariableFont_wght.ttf</file>
         <file alias="images/AppIcon.png">../images/AppIcon.png</file>
         <file alias="images/TrayIcon.png">../images/TrayIcon.png</file>
+        <file alias="config/default.toml">../config.toml</file>
     </qresource>
 </RCC>
