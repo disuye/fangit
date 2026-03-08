@@ -147,6 +147,18 @@ build CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o: CXX_COMPILER__fangit_unsc
   TARGET_PDB = fangit.pdb
   TARGET_SUPPORT_DIR = CMakeFiles/fangit.dir
 
+build CMakeFiles/fangit.dir/src/NotifyManager.cpp.o: CXX_COMPILER__fangit_unscanned_Debug /Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.cpp || cmake_object_order_depends_target_fangit
+  CONFIG = Debug
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB
+  DEP_FILE = CMakeFiles/fangit.dir/src/NotifyManager.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64
+  INCLUDES = -I/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include -I/Users/disuye/Files+Work/VSCode/fangit/src -I/Users/disuye/Files+Work/VSCode/fangit/third_party/toml11 -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Headers -iframework /Users/disuye/Qt/6.10.1/macos/lib -isystem /Users/disuye/Qt/6.10.1/macos/mkspecs/macx-clang -isystem /Users/disuye/Qt/6.10.1/macos/include -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Headers -isystem /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Headers
+  OBJECT_DIR = CMakeFiles/fangit.dir
+  OBJECT_FILE_DIR = CMakeFiles/fangit.dir/src
+  TARGET_COMPILE_PDB = CMakeFiles/fangit.dir/
+  TARGET_PDB = fangit.pdb
+  TARGET_SUPPORT_DIR = CMakeFiles/fangit.dir
+
 build CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o: CXX_COMPILER__fangit_unscanned_Debug /Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/UVLADIE3JM/qrc_resources.cpp || cmake_object_order_depends_target_fangit
   CONFIG = Debug
   DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB
@@ -167,7 +179,7 @@ build CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o: CXX_C
 #############################################
 # Link the executable fangit.app/Contents/MacOS/fangit
 
-build fangit.app/Contents/MacOS/fangit: CXX_EXECUTABLE_LINKER__fangit_Debug CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o CMakeFiles/fangit.dir/src/main.cpp.o CMakeFiles/fangit.dir/src/TrayManager.cpp.o CMakeFiles/fangit.dir/src/ConfigManager.cpp.o CMakeFiles/fangit.dir/src/WatcherManager.cpp.o CMakeFiles/fangit.dir/src/GitManager.cpp.o CMakeFiles/fangit.dir/src/CommitBatcher.cpp.o CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o | /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/QtWidgets /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/QtNetwork /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/QtGui /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/QtCore || fangit_autogen fangit_autogen_timestamp_deps
+build fangit.app/Contents/MacOS/fangit: CXX_EXECUTABLE_LINKER__fangit_Debug CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o CMakeFiles/fangit.dir/src/main.cpp.o CMakeFiles/fangit.dir/src/TrayManager.cpp.o CMakeFiles/fangit.dir/src/ConfigManager.cpp.o CMakeFiles/fangit.dir/src/WatcherManager.cpp.o CMakeFiles/fangit.dir/src/GitManager.cpp.o CMakeFiles/fangit.dir/src/CommitBatcher.cpp.o CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o CMakeFiles/fangit.dir/src/NotifyManager.cpp.o CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o | /Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/QtWidgets /Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/QtNetwork /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/QtGui /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/QtCore || fangit_autogen fangit_autogen_timestamp_deps
   CONFIG = Debug
   FLAGS = -g -arch arm64
   LINK_FLAGS = -Wl,-search_paths_first -Wl,-headerpad_max_install_names

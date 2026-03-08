@@ -2,6 +2,7 @@
 #include "UVLADIE3JM/moc_CommitBatcher.cpp"
 #include "UVLADIE3JM/moc_ConfigManager.cpp"
 #include "UVLADIE3JM/moc_GitManager.cpp"
+#include "UVLADIE3JM/moc_NotifyManager.cpp"
 #include "UVLADIE3JM/moc_TrayManager.cpp"
 #include "UVLADIE3JM/moc_WatcherManager.cpp"
 #include "UVLADIE3JM/moc_WorkflowManager.cpp"

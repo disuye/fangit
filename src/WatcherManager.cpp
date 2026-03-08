@@ -11,13 +11,14 @@ WatcherManager::WatcherManager(QObject *parent)
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged,
             this, &WatcherManager::onDirectoryChanged);
 
-    // Periodic full scan to catch anything QFileSystemWatcher misses
-    m_scanTimer.setInterval(10000); // 10 second scan interval
+    // Periodic full scan — interval set by startWatching()
     connect(&m_scanTimer, &QTimer::timeout, this, &WatcherManager::onScanTimer);
 }
 
-void WatcherManager::startWatching(const QList<WatchEntry> &entries)
+void WatcherManager::startWatching(const QList<WatchEntry> &entries, int scanIntervalSecs)
 {
+    m_scanTimer.setInterval(scanIntervalSecs * 1000);
+
     for (const auto &entry : entries)
         addWatch(entry);
 
@@ -38,7 +39,7 @@ void WatcherManager::addWatch(const WatchEntry &entry)
     QDir dir(entry.path);
     if (!dir.exists()) {
         qWarning() << "Watch directory does not exist:" << entry.path;
-        emit watchError(entry.name, "Directory does not exist: " + entry.path);
+        emit watchError(entry.pathName, "Directory does not exist: " + entry.path);
         return;
     }
 
@@ -65,14 +66,14 @@ void WatcherManager::addWatch(const WatchEntry &entry)
         m_watcher.addPath(dirIt.filePath());
     }
 
-    qDebug() << "Watching:" << entry.name << "at" << absPath
+    qDebug() << "Watching:" << entry.pathName << "at" << absPath
              << "(" << info.knownFiles.size() << "existing files)";
 }
 
-void WatcherManager::removeWatch(const QString &name)
+void WatcherManager::removeWatch(const QString &pathName)
 {
     for (auto it = m_watches.begin(); it != m_watches.end(); ++it) {
-        if (it->entry.name == name) {
+        if (it->entry.pathName == pathName) {
             m_watcher.removePath(it.key());
             m_watches.erase(it);
             break;
@@ -103,7 +104,7 @@ void WatcherManager::onDirectoryChanged(const QString &path)
     // Find which watch this belongs to
     for (auto &info : m_watches) {
         if (path.startsWith(info.entry.path)) {
-            scanDirectory(info.entry.path, info.entry.name, info.entry.emoji);
+            scanDirectory(info.entry.path, info.entry.pathName, info.entry.emoji);
             break;
         }
     }
@@ -119,11 +120,11 @@ void WatcherManager::onScanTimer()
 
     for (const auto &key : m_watches.keys()) {
         auto &info = m_watches[key];
-        scanDirectory(info.entry.path, info.entry.name, info.entry.emoji);
+        scanDirectory(info.entry.path, info.entry.pathName, info.entry.emoji);
     }
 }
 
-void WatcherManager::scanDirectory(const QString &watchPath, const QString &watchName, const QString &emoji)
+void WatcherManager::scanDirectory(const QString &watchPath, const QString &pathName, const QString &emoji)
 {
     auto &info = m_watches[watchPath];
     QStringList changedFiles;
@@ -167,7 +168,7 @@ void WatcherManager::scanDirectory(const QString &watchPath, const QString &watc
         info.knownFiles.remove(r);
 
     if (!changedFiles.isEmpty()) {
-        qDebug() << "Changes detected in" << watchName << ":" << changedFiles.size() << "file(s)";
-        emit filesChanged(watchName, emoji, changedFiles);
+        qDebug() << "Changes detected in" << pathName << ":" << changedFiles.size() << "file(s)";
+        emit filesChanged(pathName, emoji, changedFiles);
     }
 }

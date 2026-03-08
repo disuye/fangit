@@ -36,7 +36,7 @@ case "$1" in
         "$0"
         echo ""
         echo "🚀 Running fangit..."
-        open "$BUILD_DIR/fangit.app" 2>/dev/null || "$BUILD_DIR/fangit"
+        open "$BUILD_DIR/fangit.app"
         exit 0
         ;;
     "")

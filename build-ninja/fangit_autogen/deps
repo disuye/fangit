@@ -767,6 +767,8 @@ fangit_autogen/timestamp: \
 	/Users/disuye/Files+Work/VSCode/fangit/src/ConfigManager.h \
 	/Users/disuye/Files+Work/VSCode/fangit/src/GitManager.cpp \
 	/Users/disuye/Files+Work/VSCode/fangit/src/GitManager.h \
+	/Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.cpp \
+	/Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.h \
 	/Users/disuye/Files+Work/VSCode/fangit/src/TrayManager.cpp \
 	/Users/disuye/Files+Work/VSCode/fangit/src/TrayManager.h \
 	/Users/disuye/Files+Work/VSCode/fangit/src/WatcherManager.cpp \
@@ -778,15 +780,20 @@ fangit_autogen/timestamp: \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QDateTime \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QDir \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QFileSystemWatcher \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QFlags \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QList \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QMap \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QMetaType \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QObject \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QProcess \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QSet \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QSharedDataPointer \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QStandardPaths \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QString \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QStringList \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QTimer \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QUrl \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/QVariant \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/q17memory.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/q20functional.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/q20iterator.h \
@@ -795,6 +802,7 @@ fangit_autogen/timestamp: \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/q20utility.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/q23type_traits.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/q23utility.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/q26numeric.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qabstracteventdispatcher.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qalgorithms.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qalloc.h \
@@ -825,6 +833,7 @@ fangit_autogen/timestamp: \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qcontainerinfo.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qcontainertools_impl.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qcontiguouscache.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qcryptographichash.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qdarwinhelpers.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qdatastream.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qdatetime.h \
@@ -863,6 +872,7 @@ fangit_autogen/timestamp: \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qmargins.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qmath.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qmetacontainer.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qmetaobject.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qmetatype.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qminmax.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qnamespace.h \
@@ -926,6 +936,7 @@ fangit_autogen/timestamp: \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qtversionchecks.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qtypeinfo.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qtypes.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qurl.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qutf8stringview.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qvariant.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qvarlengtharray.h \
@@ -958,6 +969,24 @@ fangit_autogen/timestamp: \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/qtguiglobal.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/qtransform.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/qwindowdefs.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/QNetworkAccessManager \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/QSslConfiguration \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/QSslPreSharedKeyAuthenticator \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qabstractsocket.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qhostaddress.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qhttpheaders.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qnetworkaccessmanager.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qnetworkrequest.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qssl.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qsslcertificate.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qsslconfiguration.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qsslerror.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qsslpresharedkeyauthenticator.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qsslsocket.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtcpsocket.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetwork-config.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetworkexports.h \
+	/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetworkglobal.h \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/Headers/QMenu \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/Headers/QSystemTrayIcon \
 	/Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/Headers/qmenu.h \

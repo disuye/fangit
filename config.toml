@@ -8,6 +8,13 @@ github_user = "disuye"
 # Debounce interval in seconds before committing (30-300)
 batch_interval = 60
 
+# Filesystem scan interval in seconds (10-300)
+# Lower = faster detection, higher = less CPU. 10 is for dev testing only.
+scan_interval = 30
+
+# Tray icon style: false = colored dot indicator, true = app icon with status tint
+use_icon_logo = false
+
 [repo]
 # Remote repository URL (HTTPS or SSH)
 url = "https://github.com/disuye/disuyebot.git"
@@ -26,14 +33,39 @@ auth = "https"
 # poll_interval = 60
 
 # Watch directories — one entry per monitored folder
+# These trigger git commit + push when files change
 [[watch]]
-name = "SMPLR"
+path_name = "SMPLR"
 path = "~/fangit/SMPLR"
 emoji = "🎵"
 # Optional: only watch specific file extensions
 # extensions = ["txt", "json", "log"]
 
 [[watch]]
-name = "SomeScript"
+path_name = "SomeScript"
 path = "~/fangit/SomeScript"
 emoji = "📝"
+
+# Notification channels — post directly to GitHub issues (no git, no files)
+# Each channel maps to an issue number in the repo
+# action = "notify"       -> post issue comment only (default)
+# action = "notify+push"  -> post comment AND push push_dir to repo
+
+[[channel]]
+path_name = "status"
+issue = 1
+emoji = "🟢"
+action = "notify"
+
+[[channel]]
+path_name = "errors"
+issue = 2
+emoji = "🔴"
+action = "notify+push"
+push_dir = "~/SMPLR/logs"
+
+[[channel]]
+path_name = "log"
+issue = 3
+emoji = "📝"
+action = "notify"

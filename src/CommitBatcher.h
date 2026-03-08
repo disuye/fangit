@@ -9,7 +9,7 @@ class GitManager;
 class ConfigManager;
 
 struct PendingBatch {
-    QString watchName;
+    QString pathName;
     QString emoji;
     QStringList files;
 };
@@ -25,7 +25,7 @@ public:
     void pushNow(); // force immediate commit+push
 
 public slots:
-    void enqueueFiles(const QString &watchName, const QString &emoji, const QStringList &files);
+    void enqueueFiles(const QString &pathName, const QString &emoji, const QStringList &files);
 
 signals:
     void batchStarted();
@@ -43,6 +43,6 @@ private:
     ConfigManager &m_config;
     QTimer m_debounceTimer;
 
-    // watchName -> pending batch
+    // pathName -> pending batch
     QMap<QString, PendingBatch> m_pending;
 };

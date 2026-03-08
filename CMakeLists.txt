@@ -24,6 +24,8 @@ set(SOURCES
     src/CommitBatcher.cpp
     src/WorkflowManager.h
     src/WorkflowManager.cpp
+    src/NotifyManager.h
+    src/NotifyManager.cpp
     src/resources.qrc
 )
 

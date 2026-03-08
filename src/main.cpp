@@ -9,6 +9,7 @@
 #include "WatcherManager.h"
 #include "CommitBatcher.h"
 #include "WorkflowManager.h"
+#include "NotifyManager.h"
 #include "TrayManager.h"
 
 #define VERSION_STR "0.0.1"
@@ -42,9 +43,11 @@ int main(int argc, char *argv[])
     WatcherManager watcherManager;
     CommitBatcher commitBatcher(gitManager, configManager);
     WorkflowManager workflowManager(gitManager, configManager);
+    NotifyManager notifyManager(configManager);
 
-    // Ensure repo is cloned before anything else
-    if (!configManager.repoUrl().isEmpty() && !gitManager.isRepoCloned()) {
+    // Ensure repo is cloned before anything else (only needed for watch/sync mode)
+    if (!configManager.repoUrl().isEmpty() && !gitManager.isRepoCloned()
+        && !configManager.watchEntries().isEmpty()) {
         if (!gitManager.cloneRepo()) {
             QMessageBox::warning(nullptr, "fangit",
                 "Failed to clone repository.\n\n"
@@ -59,12 +62,13 @@ int main(int argc, char *argv[])
 
     // System tray (owns the UI lifecycle)
     TrayManager trayManager(configManager, gitManager, watcherManager,
-                            commitBatcher, workflowManager);
+                            commitBatcher, workflowManager, notifyManager);
     trayManager.show();
 
     // Start watching configured directories (only if repo is ready)
-    if (gitManager.isRepoCloned()) {
-        watcherManager.startWatching(configManager.watchEntries());
+    if (gitManager.isRepoCloned() && !configManager.watchEntries().isEmpty()) {
+        watcherManager.startWatching(configManager.watchEntries(),
+                                     configManager.scanInterval());
     }
 
     return app.exec();

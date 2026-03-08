@@ -5,6 +5,8 @@
 #include "CommitBatcher.h"
 #include "WorkflowManager.h"
 
+#include "NotifyManager.h"
+
 #include <QApplication>
 #include <QDesktopServices>
 #include <QUrl>
@@ -19,13 +21,15 @@
 
 TrayManager::TrayManager(ConfigManager &config, GitManager &git,
                          WatcherManager &watcher, CommitBatcher &batcher,
-                         WorkflowManager &workflow, QObject *parent)
+                         WorkflowManager &workflow, NotifyManager &notify,
+                         QObject *parent)
     : QObject(parent)
     , m_config(config)
     , m_git(git)
     , m_watcher(watcher)
     , m_batcher(batcher)
     , m_workflow(workflow)
+    , m_notify(notify)
     , m_trayIcon(new QSystemTrayIcon(this))
     , m_menu(new QMenu())
 {
@@ -94,7 +98,7 @@ void TrayManager::buildMenu()
     // Watch directories section
     QMenu *watchMenu = m_menu->addMenu("Watch Directories");
     for (const auto &entry : m_config.watchEntries()) {
-        QString label = entry.emoji + " " + entry.name + "  " + entry.path;
+        QString label = entry.emoji + " " + entry.pathName + "  " + entry.path;
         QAction *action = watchMenu->addAction(label);
         action->setCheckable(true);
         action->setChecked(true);
@@ -115,6 +119,20 @@ void TrayManager::buildMenu()
     connect(m_pauseAction, &QAction::triggered, this, [this]() { onPauseToggle(); });
 
     m_menu->addSeparator();
+
+    // Notify channels
+    const auto &channels = m_config.channels();
+    if (!channels.isEmpty()) {
+        QMenu *notifyMenu = m_menu->addMenu("Notify");
+        for (const auto &ch : channels) {
+            QString label = ch.emoji + " " + ch.pathName + " (issue #" + QString::number(ch.issue) + ")";
+            QAction *action = notifyMenu->addAction(label);
+            connect(action, &QAction::triggered, this, [this, pathName = ch.pathName]() {
+                m_notify.notify(pathName, "Manual test from fangit tray");
+            });
+        }
+        m_menu->addSeparator();
+    }
 
     QAction *openGH = m_menu->addAction("View on GitHub");
     connect(openGH, &QAction::triggered, this, [this]() { onOpenGitHub(); });
@@ -270,8 +288,12 @@ void TrayManager::onOpenConfig()
         }
     }
 
-    // Reveal in Finder (select the file)
+    // Reveal in Finder/file manager
+#ifdef Q_OS_MACOS
     QProcess::startDetached("open", {"-R", configPath});
+#else
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(configPath).absolutePath()));
+#endif
 }
 
 void TrayManager::onQuit()

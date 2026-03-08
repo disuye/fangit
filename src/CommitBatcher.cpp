@@ -24,10 +24,10 @@ int CommitBatcher::pendingCount() const
     return total;
 }
 
-void CommitBatcher::enqueueFiles(const QString &watchName, const QString &emoji, const QStringList &files)
+void CommitBatcher::enqueueFiles(const QString &pathName, const QString &emoji, const QStringList &files)
 {
-    auto &batch = m_pending[watchName];
-    batch.watchName = watchName;
+    auto &batch = m_pending[pathName];
+    batch.pathName = pathName;
     batch.emoji = emoji;
 
     for (const auto &f : files) {
@@ -65,7 +65,7 @@ void CommitBatcher::onTimerFired()
         // Stage the files in the repo
         QStringList repoFiles;
         for (const auto &f : batch.files)
-            repoFiles.append(batch.watchName + "/" + f);
+            repoFiles.append(batch.pathName + "/" + f);
 
         if (!m_git.add(repoFiles)) {
             allSuccess = false;
@@ -98,21 +98,21 @@ void CommitBatcher::copyFilesToRepo(const PendingBatch &batch)
     // Find the original watch path from config
     QString watchPath;
     for (const auto &entry : m_config.watchEntries()) {
-        if (entry.name == batch.watchName) {
+        if (entry.pathName == batch.pathName) {
             watchPath = entry.path;
             break;
         }
     }
 
     if (watchPath.isEmpty()) {
-        qWarning() << "Cannot find watch path for" << batch.watchName;
+        qWarning() << "Cannot find watch path for" << batch.pathName;
         return;
     }
 
     // Copy each file
     for (const auto &relFile : batch.files) {
         QString srcPath = watchPath + "/" + relFile;
-        QString dstPath = repoBase + "/" + batch.watchName + "/" + relFile;
+        QString dstPath = repoBase + "/" + batch.pathName + "/" + relFile;
 
         QDir().mkpath(QFileInfo(dstPath).absolutePath());
 
@@ -139,10 +139,10 @@ QString CommitBatcher::formatCommitMessage(const PendingBatch &batch) const
         else
             sizeStr = QString::number(size / 1024.0, 'f', 1) + "KB";
 
-        return emoji + " " + batch.watchName + " — " + batch.files.first() + " (" + sizeStr + ")";
+        return emoji + " " + batch.pathName + " — " + batch.files.first() + " (" + sizeStr + ")";
     }
 
-    QString msg = emoji + " " + batch.watchName + " — " + QString::number(batch.files.size()) + " file(s)\n";
+    QString msg = emoji + " " + batch.pathName + " — " + QString::number(batch.files.size()) + " file(s)\n";
     for (const auto &f : batch.files) {
         msg += "\n• " + f;
     }

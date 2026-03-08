@@ -46,7 +46,7 @@ template <> constexpr inline auto CommitBatcher::qt_create_metaobjectdata<qt_met
         "pendingCountChanged",
         "count",
         "enqueueFiles",
-        "watchName",
+        "pathName",
         "emoji",
         "files",
         "onTimerFired"

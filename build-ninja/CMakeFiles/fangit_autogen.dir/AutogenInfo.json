@@ -467,6 +467,12 @@
 			null
 		],
 		[
+			"/Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.h",
+			"Mu",
+			"UVLADIE3JM/moc_NotifyManager.cpp",
+			null
+		],
+		[
 			"/Users/disuye/Files+Work/VSCode/fangit/src/TrayManager.h",
 			"Mu",
 			"UVLADIE3JM/moc_TrayManager.cpp",
@@ -561,6 +567,11 @@
 		],
 		[
 			"/Users/disuye/Files+Work/VSCode/fangit/src/GitManager.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.cpp",
 			"Mu",
 			null
 		],

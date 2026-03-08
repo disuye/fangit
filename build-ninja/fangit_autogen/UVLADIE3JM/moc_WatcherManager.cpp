@@ -7,6 +7,7 @@
 *****************************************************************************/
 
 #include "../../../src/WatcherManager.h"
+#include <QtNetwork/QSslError>
 #include <QtCore/qmetatype.h>
 
 #include <QtCore/qtmochelpers.h>
@@ -41,7 +42,7 @@ template <> constexpr inline auto WatcherManager::qt_create_metaobjectdata<qt_me
         "WatcherManager",
         "filesChanged",
         "",
-        "watchName",
+        "pathName",
         "emoji",
         "files",
         "watchError",

@@ -12,6 +12,7 @@ class GitManager;
 class WatcherManager;
 class CommitBatcher;
 class WorkflowManager;
+class NotifyManager;
 
 class TrayManager : public QObject
 {
@@ -20,7 +21,8 @@ class TrayManager : public QObject
 public:
     explicit TrayManager(ConfigManager &config, GitManager &git,
                          WatcherManager &watcher, CommitBatcher &batcher,
-                         WorkflowManager &workflow, QObject *parent = nullptr);
+                         WorkflowManager &workflow, NotifyManager &notify,
+                         QObject *parent = nullptr);
     ~TrayManager();
 
     void show();
@@ -50,6 +52,7 @@ private:
     WatcherManager &m_watcher;
     CommitBatcher &m_batcher;
     WorkflowManager &m_workflow;
+    NotifyManager &m_notify;
 
     QSystemTrayIcon *m_trayIcon;
     QMenu *m_menu;
