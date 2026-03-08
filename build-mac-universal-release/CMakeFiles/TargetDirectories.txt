@@ -1,5 +1,0 @@
-/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/CMakeFiles/fangit.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/CMakeFiles/edit_cache.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/CMakeFiles/rebuild_cache.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/CMakeFiles/fangit_autogen_timestamp_deps.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-mac-universal-release/CMakeFiles/fangit_autogen.dir
