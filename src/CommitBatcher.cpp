@@ -130,8 +130,18 @@ QString CommitBatcher::formatCommitMessage(const PendingBatch &batch) const
 {
     QString emoji = batch.emoji.isEmpty() ? QString::fromUtf8("\xF0\x9F\x93\x81") : batch.emoji; // default: folder emoji
 
+    // Resolve full path for file size calculation
+    QString watchPath;
+    for (const auto &entry : m_config.watchEntries()) {
+        if (entry.pathName == batch.pathName) {
+            watchPath = entry.path;
+            break;
+        }
+    }
+
     if (batch.files.size() == 1) {
-        QFileInfo fi(batch.files.first());
+        QString fullPath = watchPath + "/" + batch.files.first();
+        QFileInfo fi(fullPath);
         qint64 size = fi.size();
         QString sizeStr;
         if (size < 1024)
@@ -139,12 +149,12 @@ QString CommitBatcher::formatCommitMessage(const PendingBatch &batch) const
         else
             sizeStr = QString::number(size / 1024.0, 'f', 1) + "KB";
 
-        return emoji + " " + batch.pathName + " — " + batch.files.first() + " (" + sizeStr + ")";
+        return emoji + " " + batch.pathName + " \xe2\x80\x94 " + batch.files.first() + " (" + sizeStr + ")";
     }
 
-    QString msg = emoji + " " + batch.pathName + " — " + QString::number(batch.files.size()) + " file(s)\n";
+    QString msg = emoji + " " + batch.pathName + " \xe2\x80\x94 " + QString::number(batch.files.size()) + " file(s)\n";
     for (const auto &f : batch.files) {
-        msg += "\n• " + f;
+        msg += "\n\xe2\x80\xa2 " + f;
     }
     return msg;
 }

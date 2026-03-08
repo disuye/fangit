@@ -81,8 +81,11 @@ bool GitManager::commit(const QString &message)
 {
     auto result = runGit({"commit", "-m", message});
     if (!result.success) {
-        m_lastError = "git commit failed: " + result.error;
-        if (!result.error.contains("nothing to commit"))
+        // "nothing to commit" can appear in stdout or stderr depending on git version
+        bool nothingToCommit = result.error.contains("nothing to commit")
+                            || result.output.contains("nothing to commit");
+        m_lastError = "git commit failed: " + result.error + result.output;
+        if (!nothingToCommit)
             emit errorOccurred(m_lastError);
     }
     return result.success;
@@ -167,7 +170,7 @@ GitManager::GitResult GitManager::runGit(const QStringList &args, int timeoutMs)
     result.success = (process.exitCode() == 0);
 
     if (!result.success) {
-        qDebug() << "git" << args.join(' ') << "failed:" << result.error;
+        qDebug() << "git" << args << "failed:" << result.error << result.output;
     }
 
     return result;
