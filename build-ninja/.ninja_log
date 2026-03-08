@@ -17,3 +17,15 @@
 347	1238	1772983966375391880	CMakeFiles/fangit.dir/src/TrayManager.cpp.o	4debcb5bff8df55e
 348	1807	1772983966375491339	CMakeFiles/fangit.dir/src/ConfigManager.cpp.o	5d37447a83d0d0a3
 1807	1888	1772983967834955735	fangit.app/Contents/MacOS/fangit	d68a6b642f646db8
+2	150	1772986597680179573	build.ninja	f848a73d17a29fbb
+2	150	1772986597680179573	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/cmake_install.cmake	f848a73d17a29fbb
+5	37	1772986597690509602	fangit_autogen/timestamp	e567d0cef93c39d7
+5	37	1772986597690509602	fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+5	37	1772986597690509602	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/timestamp	e567d0cef93c39d7
+5	37	1772986597690509602	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+37	70	1772986597753691980	fangit_autogen/UVLADIE3JM/qrc_resources.cpp	87fc2faa8ceb9e42
+37	70	1772986597753691980	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/UVLADIE3JM/qrc_resources.cpp	87fc2faa8ceb9e42
+70	275	1772986597755420888	CMakeFiles/fangit.dir/fangit_autogen/UVLADIE3JM/qrc_resources.cpp.o	df961163d50c10dc
+70	768	1772986597755132681	CMakeFiles/fangit.dir/src/main.cpp.o	125afde197403118
+70	807	1772986597755307972	CMakeFiles/fangit.dir/src/TrayManager.cpp.o	4debcb5bff8df55e
+807	886	1772986598492465161	fangit.app/Contents/MacOS/fangit	d68a6b642f646db8

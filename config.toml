@@ -1,27 +1,26 @@
-# fangit configuration
-# Place at: ~/Library/Application Support/fangit/config.toml
+# ─────────────────────────────────────────────────────────────────
+# ── FANGIT config ────────────────────────────────────────────────
+# https://github.com/disuye/fangit
+# ─────────────────────────────────────────────────────────────────
+#
 
 [general]
-# GitHub username to @mention in push notifications
+# GitHub username to @mention in notifications
 github_user = "disuye"
 
-# Debounce interval in seconds before committing (30-300)
-batch_interval = 60
+# Seconds before committing watched file changes (30-300)
+batch_interval = 30
 
 # Filesystem scan interval in seconds (10-300)
-# Lower = faster detection, higher = less CPU. 10 is for dev testing only.
+# Lower = faster detection, higher = less CPU
 scan_interval = 30
 
-# Tray icon style: false = colored dot indicator, true = app icon with status tint
+# Tray icon style: false = colored dot, true = app icon with tint
 use_icon_logo = false
 
 [repo]
 # Remote repository URL (HTTPS or SSH)
 url = "https://github.com/disuye/disuyebot.git"
-
-# Local clone path (managed by fangit)
-# Defaults to ~/Library/Application Support/fangit/repo
-# local_path = ""
 
 # Default branch
 branch = "main"
@@ -29,52 +28,66 @@ branch = "main"
 # Auth method: "https" or "ssh"
 auth = "https"
 
-# Poll interval for pull/sync mode in seconds (future)
-# poll_interval = 60
 
-# Watch directories — one entry per monitored folder
-# These trigger git commit + push when files change
-[[watch]]
-path_name = "SMPLR"
-path = "~/fangit/SMPLR"
-emoji = "🎵"
-# Optional: only watch specific file extensions
-# extensions = ["txt", "json", "log"]
+# ─────────────────────────────────────────────────────────────────
+# ── Watch directories ────────────────────────────────────────────
+# Sync mode: watches a folder, commits + pushes changes to repo.
+# Triggers iOS notification via GitHub Actions (~45-60s).
+# ─────────────────────────────────────────────────────────────────
+#
 
 [[watch]]
-path_name = "SomeScript"
-path = "~/fangit/SomeScript"
-emoji = "📝"
+path_name = "Desktop Test"
+# emoji = "☠️"
+path = "~/Desktop/fangit-test"
+extensions = ["txt", "json"]
 
-# Notification channels — post directly to GitHub issues (no git, no files)
-# Each channel maps to an issue number in the repo
+# [[watch]]
+# path_name = "Repo Folder Name"        # required — unique ID + repo subdirectory
+# emoji = "📁"				# optional
+# path = "~/Desktop/path-to-watch"	# required – path to watch folder
+# extensions = ["txt", "json"]  	# optional – which files trigger fangit
+
+
+# ─────────────────────────────────────────────────────────────────
+# ── Notification channels ────────────────────────────────────────
+# Notify mode: posts a message to a GitHub issue, no files involved.
+# ─────────────────────────────────────────────────────────────────
 #
-# mode = "dispatch"  -> triggers GitHub Action, posts as github-actions[bot] (default)
-#                       works with single account, ~35s latency
-# mode = "direct"   -> posts issue comment via API
-#                       faster (~20s) but needs a second GitHub account for notifications
+# mode = "dispatch"  -> via GitHub Action, single account (~35s)
+# mode = "direct"   -> direct API post, needs 2nd account (~20s)
+# 🔴🟠🟡🟢🔵🟣⚪⚫🟤
+# action = "notify"       -> notification only
+# action = "notify+push"  -> notification + push push_dir to repo
+# ─────────────────────────────────────────────────────────────────
 #
-# action = "notify"       -> notification only (default)
-# action = "notify+push"  -> notification AND push push_dir to repo
 
 [[channel]]
-path_name = "status"
-issue = 1
-emoji = "🟢"
-mode = "dispatch"
-action = "notify"
+path_name = "status"       		# required — unique descriptive channel ID
+issue = 1                  		# required – GitHub issue number to post to
+emoji = "🟢"		   		# optional
+mode = "dispatch"	   		# required – direct | dispatch
+action = "notify"	   		# required – notify | notify+push
 
 [[channel]]
-path_name = "errors"
+path_name = "error"
 issue = 2
 emoji = "🔴"
-mode = "dispatch"
-action = "notify+push"
-push_dir = "~/SMPLR/logs"
+mode = "direct"
+action = "notify"
 
 [[channel]]
 path_name = "log"
 issue = 3
-emoji = "📝"
+emoji = "⚪"
 mode = "dispatch"
 action = "notify"
+
+[[channel]]
+path_name = "issue"
+issue = 4
+emoji = "🟡"
+mode = "dispatch"
+action = "notify"
+
+# ─────────────────────────────────────────────────────────────────
