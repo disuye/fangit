@@ -73,7 +73,7 @@ action = "notify"	   		# required – notify | notify+push
 path_name = "error"
 issue = 2
 emoji = "🔴"
-mode = "direct"
+mode = "dispatc"
 action = "notify"
 
 [[channel]]
