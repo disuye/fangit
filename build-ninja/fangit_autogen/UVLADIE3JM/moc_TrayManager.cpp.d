@@ -864,6 +864,7 @@
   /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qxptype_traits.h \
   /Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qyieldcpu.h \
   /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/QAction \
+  /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/QPixmap \
   /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/qaction.h \
   /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/qbitmap.h \
   /Users/disuye/Qt/6.10.1/macos/lib/QtGui.framework/Versions/A/Headers/qbrush.h \

@@ -6,6 +6,7 @@
 #include <QAction>
 #include <QTimer>
 #include <QDateTime>
+#include <QPixmap>
 
 class ConfigManager;
 class GitManager;
@@ -46,6 +47,9 @@ private:
     void buildMenu();
     void setState(TrayState state);
     QIcon stateIcon(TrayState state) const;
+    QIcon dotIcon(TrayState state) const;
+    QIcon logoIcon(TrayState state) const;
+    QColor stateColor(TrayState state) const;
 
     ConfigManager &m_config;
     GitManager &m_git;
@@ -56,6 +60,7 @@ private:
 
     QSystemTrayIcon *m_trayIcon;
     QMenu *m_menu;
+    QPixmap m_trayTemplate;   // loaded once from resource
 
     // Menu items that need updating
     QAction *m_statusAction;

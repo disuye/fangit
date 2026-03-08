@@ -9,7 +9,7 @@
 	"INCLUDE_DIR" : "/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/include",
 	"INPUTS" : 
 	[
-		"/Users/disuye/Files+Work/VSCode/fangit/config.toml",
+		"/Users/disuye/Files+Work/VSCode/fangit/images/TrayIcon.png",
 		"/Users/disuye/Files+Work/VSCode/fangit/images/AppIcon.png",
 		"/Users/disuye/Files+Work/VSCode/fangit/fonts/FiraCode-VariableFont_wght.ttf"
 	],

@@ -33,6 +33,11 @@ TrayManager::TrayManager(ConfigManager &config, GitManager &git,
     , m_trayIcon(new QSystemTrayIcon(this))
     , m_menu(new QMenu())
 {
+    // Load tray icon template from resources
+    m_trayTemplate = QPixmap(":/images/TrayIcon.png");
+    if (m_trayTemplate.isNull())
+        qWarning() << "Failed to load TrayIcon.png from resources";
+
     buildMenu();
     m_trayIcon->setContextMenu(m_menu);
     setState(TrayState::Idle);
@@ -163,27 +168,77 @@ void TrayManager::setState(TrayState state)
 
 QIcon TrayManager::stateIcon(TrayState state) const
 {
-    // Create simple colored circle icons for each state
+    if (m_config.useIconLogo() && !m_trayTemplate.isNull())
+        return logoIcon(state);
+    return dotIcon(state);
+}
+
+QColor TrayManager::stateColor(TrayState state) const
+{
+    switch (state) {
+        case TrayState::Idle:    return QColor(76, 175, 80);    // green
+        case TrayState::Pending: return QColor(255, 193, 7);    // amber
+        case TrayState::Pushing: return QColor(33, 150, 243);   // blue
+        case TrayState::Error:   return QColor(244, 67, 54);    // red
+    }
+    return QColor(128, 128, 128);
+}
+
+// Simple colored dot — compact, works on all platforms
+QIcon TrayManager::dotIcon(TrayState state) const
+{
     int size = 22;
     QPixmap pix(size, size);
     pix.fill(Qt::transparent);
 
     QPainter painter(&pix);
     painter.setRenderHint(QPainter::Antialiasing);
-
-    QColor color;
-    switch (state) {
-        case TrayState::Idle:    color = QColor(76, 175, 80);   break; // green
-        case TrayState::Pending: color = QColor(255, 193, 7);   break; // amber
-        case TrayState::Pushing: color = QColor(33, 150, 243);  break; // blue
-        case TrayState::Error:   color = QColor(244, 67, 54);   break; // red
-    }
-
-    painter.setBrush(color);
+    painter.setBrush(stateColor(state));
     painter.setPen(Qt::NoPen);
     painter.drawEllipse(2, 2, size - 4, size - 4);
 
     return QIcon(pix);
+}
+
+// App icon with colored status dot in bottom-right corner
+QIcon TrayManager::logoIcon(TrayState state) const
+{
+    // Scale template to tray size (22pt, 44px for @2x)
+    int size = 44;
+    QPixmap icon = m_trayTemplate.scaled(size, size,
+        Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    // On macOS, we want a template image (white silhouette) that the OS
+    // adapts for dark/light mode. The status dot is composited on top.
+    QPainter painter(&icon);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    // Draw status dot — bottom-right corner
+    int dotSize = 12;
+    int dotX = size - dotSize - 1;
+    int dotY = size - dotSize - 1;
+
+    // Dark outline for contrast against any background
+    painter.setBrush(Qt::black);
+    painter.setPen(Qt::NoPen);
+    painter.drawEllipse(dotX - 1, dotY - 1, dotSize + 2, dotSize + 2);
+
+    // Colored dot
+    painter.setBrush(stateColor(state));
+    painter.drawEllipse(dotX, dotY, dotSize, dotSize);
+
+    painter.end();
+
+#ifdef Q_OS_MACOS
+    // Set as template image so macOS handles dark/light mode for the icon body.
+    // Note: the colored dot won't be affected by template rendering since
+    // macOS only templates fully opaque white regions.
+    // This requires accessing the native NSImage — for now we skip setTemplate
+    // and let the white PNG work naturally in both modes.
+    // TODO: Use Objective-C bridge to call [nsImage setTemplate:YES]
+#endif
+
+    return QIcon(icon);
 }
 
 void TrayManager::updateStatus()
@@ -256,11 +311,62 @@ void TrayManager::onOpenConfig()
     // Create default config if it doesn't exist
     if (!QFileInfo::exists(configPath)) {
         QDir().mkpath(QFileInfo(configPath).absolutePath());
-        QFile defaultConfig(":/config/default.toml");
-        if (defaultConfig.open(QIODevice::ReadOnly)) {
-            QFile out(configPath);
-            if (out.open(QIODevice::WriteOnly))
-                out.write(defaultConfig.readAll());
+        QFile file(configPath);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&file);
+            out << "# fangit configuration\n"
+                << "# https://github.com/disuye/fangit\n"
+                << "\n"
+                << "[general]\n"
+                << "# GitHub username to @mention in notifications\n"
+                << "github_user = \"\"\n"
+                << "\n"
+                << "# Seconds before committing watched file changes (30-300)\n"
+                << "batch_interval = 60\n"
+                << "\n"
+                << "# Filesystem scan interval in seconds (10-300)\n"
+                << "# Lower = faster detection, higher = less CPU\n"
+                << "scan_interval = 30\n"
+                << "\n"
+                << "# Tray icon style: false = colored dot, true = app icon with status tint\n"
+                << "use_icon_logo = false\n"
+                << "\n"
+                << "[repo]\n"
+                << "# Remote repository URL (HTTPS or SSH)\n"
+                << "url = \"\"\n"
+                << "\n"
+                << "# Default branch\n"
+                << "branch = \"main\"\n"
+                << "\n"
+                << "# Auth method: \"https\" or \"ssh\"\n"
+                << "auth = \"https\"\n"
+                << "\n"
+                << "# ── Watch directories ────────────────────────────────────────────\n"
+                << "# Sync mode: watches a folder, commits + pushes file changes to repo.\n"
+                << "# Triggers iOS notification via GitHub Actions (~45-60s).\n"
+                << "#\n"
+                << "# [[watch]]\n"
+                << "# path_name = \"MyApp\"         # required — unique ID + repo subdirectory\n"
+                << "# path = \"~/path/to/folder\"\n"
+                << "# emoji = \"📁\"\n"
+                << "# extensions = [\"txt\", \"json\"]  # optional file filter\n"
+                << "\n"
+                << "# ── Notification channels ────────────────────────────────────────\n"
+                << "# Notify mode: posts a message to a GitHub issue, no files involved.\n"
+                << "#\n"
+                << "# mode = \"dispatch\"  -> via GitHub Action, single account (~35s)\n"
+                << "# mode = \"direct\"   -> direct API post, needs 2nd account (~20s)\n"
+                << "#\n"
+                << "# action = \"notify\"       -> notification only\n"
+                << "# action = \"notify+push\"  -> notification + push push_dir to repo\n"
+                << "#\n"
+                << "# [[channel]]\n"
+                << "# path_name = \"status\"       # required — unique channel ID\n"
+                << "# issue = 1                  # GitHub issue number to post to\n"
+                << "# emoji = \"🟢\"\n"
+                << "# mode = \"dispatch\"\n"
+                << "# action = \"notify\"\n";
+            file.close();
         }
     }
 

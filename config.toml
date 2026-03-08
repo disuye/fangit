@@ -16,7 +16,7 @@ batch_interval = 30
 scan_interval = 30
 
 # Tray icon style: false = colored dot, true = app icon with tint
-use_icon_logo = false
+use_icon_logo = true
 
 [repo]
 # Remote repository URL (HTTPS or SSH)
