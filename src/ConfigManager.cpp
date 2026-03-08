@@ -15,7 +15,7 @@ ConfigManager::ConfigManager(QObject *parent)
 
 QString ConfigManager::configFilePath() const
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
            + "/config.toml";
 }
 

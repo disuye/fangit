@@ -43,6 +43,13 @@ bool GitManager::cloneRepo()
 
     emit operationStarted("clone");
 
+    // If directory exists but isn't a git repo, remove it so clone can proceed
+    QDir repoDir(repoPath());
+    if (repoDir.exists() && !QFileInfo::exists(repoPath() + "/.git")) {
+        qDebug() << "Removing stale repo directory:" << repoPath();
+        repoDir.removeRecursively();
+    }
+
     QDir().mkpath(QFileInfo(repoPath()).absolutePath());
 
     auto result = runGit({"clone", m_config.repoUrl(), repoPath()}, 120000);

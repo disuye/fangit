@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName("fangit");
     app.setApplicationVersion(VERSION_STR);
-    app.setOrganizationName("disuye");
     app.setOrganizationDomain("com.disuye");
     app.setQuitOnLastWindowClosed(false);
 
@@ -44,6 +43,16 @@ int main(int argc, char *argv[])
     CommitBatcher commitBatcher(gitManager, configManager);
     WorkflowManager workflowManager(gitManager, configManager);
 
+    // Ensure repo is cloned before anything else
+    if (!configManager.repoUrl().isEmpty() && !gitManager.isRepoCloned()) {
+        if (!gitManager.cloneRepo()) {
+            QMessageBox::warning(nullptr, "fangit",
+                "Failed to clone repository.\n\n"
+                "Check your config.toml repo URL and credentials.\n\n"
+                + gitManager.lastError());
+        }
+    }
+
     // Connect watcher to batcher
     QObject::connect(&watcherManager, &WatcherManager::filesChanged,
                      &commitBatcher, &CommitBatcher::enqueueFiles);
@@ -53,8 +62,10 @@ int main(int argc, char *argv[])
                             commitBatcher, workflowManager);
     trayManager.show();
 
-    // Start watching configured directories
-    watcherManager.startWatching(configManager.watchEntries());
+    // Start watching configured directories (only if repo is ready)
+    if (gitManager.isRepoCloned()) {
+        watcherManager.startWatching(configManager.watchEntries());
+    }
 
     return app.exec();
 }
