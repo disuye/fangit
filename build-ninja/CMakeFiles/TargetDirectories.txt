@@ -1,5 +1,0 @@
-/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/edit_cache.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/rebuild_cache.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit_autogen_timestamp_deps.dir
-/Users/disuye/Files+Work/VSCode/fangit/build-ninja/CMakeFiles/fangit_autogen.dir
