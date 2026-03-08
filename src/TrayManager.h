@@ -36,6 +36,7 @@ private slots:
     void onPushNow();
     void onPauseToggle();
     void onOpenGitHub();
+    void onOpenConfig();
     void onQuit();
     void updateStatus();
 

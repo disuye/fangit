@@ -8,6 +8,10 @@
 #include <QApplication>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QProcess>
 #include <QDebug>
 #include <QDateTime>
 #include <QPainter>
@@ -114,6 +118,9 @@ void TrayManager::buildMenu()
 
     QAction *openGH = m_menu->addAction("View on GitHub");
     connect(openGH, &QAction::triggered, this, [this]() { onOpenGitHub(); });
+
+    QAction *openConfig = m_menu->addAction("Open config.toml");
+    connect(openConfig, &QAction::triggered, this, [this]() { onOpenConfig(); });
 
     m_menu->addSeparator();
 
@@ -222,6 +229,49 @@ void TrayManager::onOpenGitHub()
     if (url.endsWith(".git"))
         url.chop(4);
     QDesktopServices::openUrl(QUrl(url));
+}
+
+void TrayManager::onOpenConfig()
+{
+    QString configPath = m_config.configFilePath();
+
+    // Create default config if it doesn't exist
+    if (!QFileInfo::exists(configPath)) {
+        QDir().mkpath(QFileInfo(configPath).absolutePath());
+        QFile file(configPath);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&file);
+            out << "# fangit configuration\n"
+                << "\n"
+                << "[general]\n"
+                << "# GitHub username to @mention in push notifications\n"
+                << "github_user = \"\"\n"
+                << "\n"
+                << "# Debounce interval in seconds before committing (30-300)\n"
+                << "batch_interval = 60\n"
+                << "\n"
+                << "[repo]\n"
+                << "# Remote repository URL (HTTPS or SSH)\n"
+                << "url = \"\"\n"
+                << "\n"
+                << "# Default branch\n"
+                << "branch = \"main\"\n"
+                << "\n"
+                << "# Auth method: \"https\" or \"ssh\"\n"
+                << "auth = \"https\"\n"
+                << "\n"
+                << "# Watch directories — add one [[watch]] block per folder\n"
+                << "# [[watch]]\n"
+                << "# name = \"MyFolder\"\n"
+                << "# path = \"~/path/to/folder\"\n"
+                << "# emoji = \"📁\"\n"
+                << "# extensions = [\"txt\", \"json\"]  # optional filter\n";
+            file.close();
+        }
+    }
+
+    // Reveal in Finder (select the file)
+    QProcess::startDetached("open", {"-R", configPath});
 }
 
 void TrayManager::onQuit()
