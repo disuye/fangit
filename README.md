@@ -12,6 +12,8 @@ Fangit has three modes:
 
 All three deliver push notifications to your phone via the GitHub mobile app.
 
+Watches can be routed to either sync or notify mode per-entry — the same folder can archive some files to git while sending lightweight notifications for others.
+
 ## Why
 
 You have a machine doing something — rendering video, running a generative music stream, processing batch jobs — and you want to know what it's doing from your phone. The existing options are either complex (Prometheus, Grafana) or require extra infrastructure (self-hosted notification servers).
@@ -51,7 +53,7 @@ branch = "main"
 auth = "https"
 ```
 
-Add a `[[watch]]` block to monitor a folder, and/or `[[channel]]` blocks for notifications. See [Configuration](#configuration) below.
+Add `[[watch]]` blocks to monitor folders and/or `[[channel]]` blocks for notifications. See [Configuration](#configuration) below.
 
 ### 4. Restart fangit
 
@@ -93,8 +95,11 @@ batch_interval = 60
 # Supplements QFileSystemWatcher for reliability
 scan_interval = 30
 
-# Tray icon style: false = colored dot, true = app icon with status tint
-use_icon_logo = false
+# Tray icon style: "dot" | "logo" | "tint"
+#   dot  = colored circle (default, minimal)
+#   logo = app icon with colored status dot in corner
+#   tint = app icon tinted entirely in status color
+tray_style = "dot"
 ```
 
 ### Repository
@@ -106,25 +111,67 @@ branch = "main"
 auth = "https"    # "https" or "ssh"
 ```
 
-### Watch directories (Sync mode)
+### Watch directories
 
-Each `[[watch]]` block monitors a local folder. New or modified files are committed and pushed to the repo automatically.
+Each `[[watch]]` block monitors a local folder. What happens when files change depends on the `action` field.
 
 ```toml
 [[watch]]
 path_name = "SMPLR"                # required — unique ID + repo subdirectory name
 path = "~/SMPLR/recipes"           # local folder to watch
-emoji = "🎵"                       # prefix for commit messages
+emoji = "🎵"                       # prefix for commit/notification messages
 extensions = ["txt", "json"]       # optional — only watch these file types
+action = "sync"                    # optional — see routing below
 ```
 
-`path_name` is important: it becomes the subdirectory in the git repo. Files from `~/SMPLR/recipes/` appear in the repo under `SMPLR/`.
+`path_name` is important: it becomes the subdirectory in the git repo (for sync mode). Files from `~/SMPLR/recipes/` appear in the repo under `SMPLR/`.
 
 For multi-machine setups, use `path_name = "SMPLR/macFaux"` to namespace by machine.
 
-### Notification channels (Notify mode)
+#### Watch routing — the `action` field
 
-Each `[[channel]]` block sends messages directly to a GitHub issue — no files, no git commits.
+The `action` field controls what happens when files change in the watched directory:
+
+| `action` value | Behaviour |
+|----------------|-----------|
+| `"sync"` or omitted | Git commit + push (default). Files archived to repo, notification via Actions. |
+| A `[[channel]]` path_name | Skip git. Send a notification via that channel with the filenames. |
+
+This means you can watch the **same folder** with different extensions routed to different behaviours:
+
+```toml
+# .txt recipe files → archive to git repo
+[[watch]]
+path_name = "SMPLR-recipes"
+path = "/Volumes/Chainsaw/SMPLR/Stream"
+emoji = "🎵"
+extensions = ["txt"]
+action = "sync"
+
+# .log files → notify only, no git
+[[watch]]
+path_name = "SMPLR-errors"
+path = "/Volumes/Chainsaw/SMPLR/Stream"
+emoji = "🔴"
+extensions = ["log"]
+action = "errors"
+
+# The channel that "errors" routes to
+[[channel]]
+path_name = "errors"
+issue = 2
+emoji = "🔴"
+mode = "dispatch"
+action = "notify"
+```
+
+When a `.txt` file appears, it gets committed and pushed to git. When a `.log` file appears, fangit sends a notification listing the filename(s) — no git, no file upload, just a ping on your phone.
+
+If `action` is set to a string that doesn't match any channel, it falls through to sync mode as a safe default.
+
+### Notification channels
+
+Each `[[channel]]` block defines a notification destination — a specific GitHub issue.
 
 ```toml
 [[channel]]
@@ -135,6 +182,10 @@ mode = "dispatch"             # "dispatch" or "direct" (see below)
 action = "notify"             # "notify" or "notify+push"
 # push_dir = "~/logs"         # only used with action = "notify+push"
 ```
+
+Channels can be triggered in two ways:
+1. **From a `[[watch]]`** — set the watch's `action` to the channel's `path_name`
+2. **From the tray menu** — click Notify → channel name to send a test message
 
 **Delivery modes:**
 
@@ -167,11 +218,11 @@ push_dir = "~/myapp/logs"       # this directory gets committed + pushed
 
 ## Modes explained
 
-### Sync mode
+### Sync mode (watch → git → notification)
 
 ```
 File appears in ~/watched-folder/
-  → fangit detects it (QFileSystemWatcher + periodic scan)
+  → fangit detects change (QFileSystemWatcher + periodic scan)
     → Debounce timer waits (batch_interval seconds)
       → File copied into local repo clone
         → git add + commit + push
@@ -184,31 +235,31 @@ File appears in ~/watched-folder/
 
 **Latency:** ~45-60 seconds (batch_interval + Actions runner ~15s + Apple push ~20s).
 
-### Notify mode (dispatch)
+### Notify via watch (watch → channel → notification)
 
 ```
-fangit notify "status" "Stream healthy"
-  → API call: POST workflow_dispatch event
-    → GitHub Action runs (~15s)
-      → github-actions[bot] posts issue comment @mentioning you
-        → iOS push notification (~20s)
+File appears in ~/watched-folder/
+  → fangit detects change
+    → Debounce timer waits (batch_interval seconds)
+      → Notification sent via channel with filename(s)
+        → iOS push notification
 ```
 
-**Use cases:** Status heartbeats, error alerts, event notifications — anything where you want a ping without files.
+**Use cases:** Lightweight monitoring — you want to know a file appeared without archiving it. Error log detection, render completion alerts.
 
-**Latency:** ~30-35 seconds. Works with a single GitHub account.
+**Latency:** ~30-35s (dispatch) or ~20-30s (direct) + batch_interval.
 
-### Notify mode (direct)
+### Notify via tray menu or API
 
 ```
-fangit notify "status" "Stream healthy"
-  → API call: POST issue comment directly
-    → iOS push notification (~20s)
+Tray menu → Notify → channel name
+  → Notification sent via channel
+    → iOS push notification
 ```
 
-**Use cases:** Same as dispatch, but faster. Requires a second GitHub account.
+**Use cases:** Manual test notifications, status heartbeats, integration with other apps (future CLI).
 
-**Latency:** ~20-30 seconds.
+**Latency:** ~30-35s (dispatch) or ~20-30s (direct).
 
 ---
 
@@ -218,7 +269,7 @@ fangit notify "status" "Stream healthy"
 |------|-------------|
 | **Status** | Current state: watching, pending, pushing, error |
 | **Last push** | Time since last successful push |
-| **Watch Directories** | List of monitored folders |
+| **Watch Directories** | List of monitored folders with action type |
 | **Notify** | Send a test notification to any configured channel |
 | **Push now** | Force immediate commit + push (skip debounce timer) |
 | **Pause/Resume** | Temporarily stop watching |
@@ -226,7 +277,9 @@ fangit notify "status" "Stream healthy"
 | **Open config.toml** | Reveal config file (creates default if missing) |
 | **Quit** | Stop watching and exit |
 
-Tray icon colors: 🟢 idle, 🟡 pending, 🔵 pushing, 🔴 error.
+Tray icon states: 🟢 idle, 🟡 pending, 🔵 pushing, 🔴 error.
+
+Tray icon style is configurable via `tray_style` in config: `"dot"` (colored circle), `"logo"` (app icon with status dot), or `"tint"` (app icon tinted in status color).
 
 ---
 
@@ -272,7 +325,7 @@ main.cpp
 ├── ConfigManager        — TOML config (toml11), read/write, path resolution
 ├── GitManager           — git CLI wrapper (clone, add, commit, push, pull)
 ├── WatcherManager       — QFileSystemWatcher + configurable periodic scan
-├── CommitBatcher        — Debounce timer, file copy to repo, commit formatting
+├── CommitBatcher        — Debounce + routing: sync (git) or notify (channel)
 ├── WorkflowManager      — Auto-creates .github/workflows/notify.yml
 ├── NotifyManager        — GitHub API: dispatch (workflow_dispatch) + direct (issue comment)
 └── TrayManager          — System tray icon, menu, status display
@@ -283,10 +336,12 @@ main.cpp
 ```
 fangit/
 ├── CMakeLists.txt
-├── config.toml                   # Reference config
+├── config.toml                   # Reference config (bundled into app)
 ├── macos/Info.plist              # LSUIElement (menu bar only, no dock icon)
 ├── fonts/FiraCode-VariableFont_wght.ttf
-├── images/AppIcon.png|.icns
+├── images/
+│   ├── AppIcon.png|.icns
+│   └── TrayIcon.png              # White silhouette for tray (dark/light mode)
 ├── linux/AppIcon-512.png
 ├── scripts/
 │   ├── ninja.sh                  # Debug build
@@ -294,15 +349,15 @@ fangit/
 │   ├── dummyAGL.sh               # Legacy Qt compatibility
 │   └── png2icns.sh               # Icon conversion
 ├── src/
-│   ├── main.cpp
-│   ├── resources.qrc
-│   ├── ConfigManager.h/.cpp
-│   ├── TrayManager.h/.cpp
-│   ├── WatcherManager.h/.cpp
-│   ├── GitManager.h/.cpp
-│   ├── CommitBatcher.h/.cpp
-│   ├── WorkflowManager.h/.cpp
-│   └── NotifyManager.h/.cpp
+│   ├── main.cpp                  # Entry point, version, component wiring
+│   ├── resources.qrc             # Embedded fonts, icons, default config
+│   ├── ConfigManager.h/.cpp      # TOML config, tray style, watch/channel parsing
+│   ├── TrayManager.h/.cpp        # System tray: dot/logo/tint icon styles
+│   ├── WatcherManager.h/.cpp     # QFileSystemWatcher + periodic scan
+│   ├── GitManager.h/.cpp         # git CLI wrapper
+│   ├── CommitBatcher.h/.cpp      # Debounce, sync/notify routing, commit formatting
+│   ├── WorkflowManager.h/.cpp    # Auto-creates GitHub Actions workflow
+│   └── NotifyManager.h/.cpp      # GitHub API: dispatch + direct modes
 ├── third_party/toml11/           # Vendored, header-only
 └── notes/                        # Design docs + test scripts
 ```
@@ -313,6 +368,7 @@ fangit/
 - **toml11 vendored** — header-only C++ TOML parser. No runtime or build-time network dependency.
 - **Append-only by design** — watches for new/modified files, ignores deletes.
 - **Single workflow file** — handles both push-triggered and dispatch-triggered notifications.
+- **Watch→channel routing** — `action` field on watches connects to channels by name. No special syntax, just matching strings.
 - **LSUIElement** — menu bar only, no dock icon (macOS).
 - **Cross-platform** — Qt6 with QFileSystemWatcher (fsevents on macOS, inotify on Linux), QSystemTrayIcon for tray.
 
@@ -333,7 +389,10 @@ Nothing. GitHub free tier includes private repos, Actions minutes, and the mobil
 Eventually, if you push a lot. For text files and small images, a year of use is fine. For large files, consider Git LFS or periodic history cleanup.
 
 **What if my machine goes offline?**
-Fangit queues commits locally. When the network returns, the next push sends everything.
+Sync mode queues commits locally. When the network returns, the next push sends everything. Notify mode requires network — missed notifications are not queued.
+
+**Can I watch the same folder with different actions?**
+Yes. Use multiple `[[watch]]` blocks with the same `path` but different `extensions` and `action` values. For example, `.txt` files sync to git while `.log` files trigger a notification.
 
 **Can I use this on Linux?**
 Yes. Qt6 provides QFileSystemWatcher (inotify backend) and QSystemTrayIcon. Build as an AppImage for distribution.

@@ -1,5 +1,16 @@
 cmake_minimum_required(VERSION 3.20)
-project(fangit VERSION 0.1.0 LANGUAGES CXX)
+project(fangit VERSION 6.6.6 LANGUAGES CXX)
+
+# Detect version from main.cpp
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" VERSION_LINE REGEX "^#define VERSION_STR")
+if(VERSION_LINE)
+    string(REGEX MATCH "\"([^\"]+)\"" VERSION_STR "${VERSION_LINE}")
+    string(REPLACE "\"" "" VERSION_STR "${CMAKE_MATCH_1}")
+else()
+    message(WARNING "VERSION_STR not found in main.cpp – falling back to 0.0.1")
+    set(VERSION_STR "0.0.1")
+endif()
+message(STATUS "Detected application version: ${VERSION_STR}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -42,8 +53,8 @@ if(APPLE)
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/macos/Info.plist"
         MACOSX_BUNDLE_GUI_IDENTIFIER "com.disuye.fangit"
         MACOSX_BUNDLE_BUNDLE_NAME "fangit"
-        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION_STR}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION_STR}"
     )
 else()
     qt_add_executable(fangit ${SOURCES})
