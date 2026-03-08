@@ -44,6 +44,7 @@ template <> constexpr inline auto WatcherManager::qt_create_metaobjectdata<qt_me
         "",
         "pathName",
         "emoji",
+        "action",
         "files",
         "watchError",
         "error",
@@ -54,19 +55,19 @@ template <> constexpr inline auto WatcherManager::qt_create_metaobjectdata<qt_me
 
     QtMocHelpers::UintData qt_methods {
         // Signal 'filesChanged'
-        QtMocHelpers::SignalData<void(const QString &, const QString &, const QStringList &)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 3 }, { QMetaType::QString, 4 }, { QMetaType::QStringList, 5 },
+        QtMocHelpers::SignalData<void(const QString &, const QString &, const QString &, const QStringList &)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 3 }, { QMetaType::QString, 4 }, { QMetaType::QString, 5 }, { QMetaType::QStringList, 6 },
         }}),
         // Signal 'watchError'
-        QtMocHelpers::SignalData<void(const QString &, const QString &)>(6, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 3 }, { QMetaType::QString, 7 },
+        QtMocHelpers::SignalData<void(const QString &, const QString &)>(7, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 3 }, { QMetaType::QString, 8 },
         }}),
         // Slot 'onDirectoryChanged'
-        QtMocHelpers::SlotData<void(const QString &)>(8, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::QString, 9 },
+        QtMocHelpers::SlotData<void(const QString &)>(9, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::QString, 10 },
         }}),
         // Slot 'onScanTimer'
-        QtMocHelpers::SlotData<void()>(10, 2, QMC::AccessPrivate, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(11, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -90,7 +91,7 @@ void WatcherManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
     auto *_t = static_cast<WatcherManager *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->filesChanged((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QStringList>>(_a[3]))); break;
+        case 0: _t->filesChanged((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast<std::add_pointer_t<QStringList>>(_a[4]))); break;
         case 1: _t->watchError((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2]))); break;
         case 2: _t->onDirectoryChanged((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
         case 3: _t->onScanTimer(); break;
@@ -98,7 +99,7 @@ void WatcherManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         }
     }
     if (_c == QMetaObject::IndexOfMethod) {
-        if (QtMocHelpers::indexOfMethod<void (WatcherManager::*)(const QString & , const QString & , const QStringList & )>(_a, &WatcherManager::filesChanged, 0))
+        if (QtMocHelpers::indexOfMethod<void (WatcherManager::*)(const QString & , const QString & , const QString & , const QStringList & )>(_a, &WatcherManager::filesChanged, 0))
             return;
         if (QtMocHelpers::indexOfMethod<void (WatcherManager::*)(const QString & , const QString & )>(_a, &WatcherManager::watchError, 1))
             return;
@@ -137,9 +138,9 @@ int WatcherManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void WatcherManager::filesChanged(const QString & _t1, const QString & _t2, const QStringList & _t3)
+void WatcherManager::filesChanged(const QString & _t1, const QString & _t2, const QString & _t3, const QStringList & _t4)
 {
-    QMetaObject::activate<void>(this, &staticMetaObject, 0, nullptr, _t1, _t2, _t3);
+    QMetaObject::activate<void>(this, &staticMetaObject, 0, nullptr, _t1, _t2, _t3, _t4);
 }
 
 // SIGNAL 1
