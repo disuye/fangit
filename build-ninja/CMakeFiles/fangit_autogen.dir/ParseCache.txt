@@ -1763,6 +1763,7 @@
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qversiontagging.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qxptype_traits.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtCore.framework/Versions/A/Headers/qyieldcpu.h
+/Users/disuye/Files+Work/VSCode/fangit/src/ConfigManager.cpp
 /Users/disuye/Files+Work/VSCode/fangit/src/TrayManager.h
  mmc:Q_OBJECT
  mdp:/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/Availability.h
@@ -2666,7 +2667,6 @@
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/Headers/qtwidgetsexports.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/Headers/qtwidgetsglobal.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtWidgets.framework/Versions/A/Headers/qwidget.h
-/Users/disuye/Files+Work/VSCode/fangit/src/ConfigManager.cpp
 /Users/disuye/Files+Work/VSCode/fangit/src/CommitBatcher.h
  mmc:Q_OBJECT
  mdp:/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/Availability.h
@@ -5276,6 +5276,7 @@
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetwork-config.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetworkexports.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetworkglobal.h
+/Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.cpp
 /Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.h
  mmc:Q_OBJECT
  mdp:/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/Availability.h
@@ -6159,7 +6160,6 @@
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetwork-config.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetworkexports.h
  mdp:/Users/disuye/Qt/6.10.1/macos/lib/QtNetwork.framework/Versions/A/Headers/qtnetworkglobal.h
-/Users/disuye/Files+Work/VSCode/fangit/src/NotifyManager.cpp
 /Users/disuye/Files+Work/VSCode/fangit/src/GitManager.cpp
 /Users/disuye/Files+Work/VSCode/fangit/src/main.cpp
 /Users/disuye/Files+Work/VSCode/fangit/src/TrayManager.cpp

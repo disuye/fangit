@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
     ConfigManager configManager;
     GitManager gitManager(configManager);
     WatcherManager watcherManager;
+    NotifyManager notifyManager(configManager);
     CommitBatcher commitBatcher(gitManager, configManager, notifyManager);
     WorkflowManager workflowManager(gitManager, configManager);
-    NotifyManager notifyManager(configManager);
 
     // Ensure repo is cloned (needed for watch/sync mode AND dispatch notify mode)
     bool needsRepo = !configManager.watchEntries().isEmpty()

@@ -48,6 +48,7 @@ template <> constexpr inline auto CommitBatcher::qt_create_metaobjectdata<qt_met
         "enqueueFiles",
         "pathName",
         "emoji",
+        "action",
         "files",
         "onTimerFired"
     };
@@ -64,11 +65,11 @@ template <> constexpr inline auto CommitBatcher::qt_create_metaobjectdata<qt_met
             { QMetaType::Int, 6 },
         }}),
         // Slot 'enqueueFiles'
-        QtMocHelpers::SlotData<void(const QString &, const QString &, const QStringList &)>(7, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 8 }, { QMetaType::QString, 9 }, { QMetaType::QStringList, 10 },
+        QtMocHelpers::SlotData<void(const QString &, const QString &, const QString &, const QStringList &)>(7, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 8 }, { QMetaType::QString, 9 }, { QMetaType::QString, 10 }, { QMetaType::QStringList, 11 },
         }}),
         // Slot 'onTimerFired'
-        QtMocHelpers::SlotData<void()>(11, 2, QMC::AccessPrivate, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(12, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -95,7 +96,7 @@ void CommitBatcher::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 0: _t->batchStarted(); break;
         case 1: _t->batchFinished((*reinterpret_cast<std::add_pointer_t<bool>>(_a[1]))); break;
         case 2: _t->pendingCountChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
-        case 3: _t->enqueueFiles((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QStringList>>(_a[3]))); break;
+        case 3: _t->enqueueFiles((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast<std::add_pointer_t<QStringList>>(_a[4]))); break;
         case 4: _t->onTimerFired(); break;
         default: ;
         }
