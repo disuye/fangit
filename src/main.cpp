@@ -45,15 +45,22 @@ int main(int argc, char *argv[])
     WorkflowManager workflowManager(gitManager, configManager);
     NotifyManager notifyManager(configManager);
 
-    // Ensure repo is cloned before anything else (only needed for watch/sync mode)
-    if (!configManager.repoUrl().isEmpty() && !gitManager.isRepoCloned()
-        && !configManager.watchEntries().isEmpty()) {
+    // Ensure repo is cloned (needed for watch/sync mode AND dispatch notify mode)
+    bool needsRepo = !configManager.watchEntries().isEmpty()
+                  || !configManager.channels().isEmpty();
+
+    if (!configManager.repoUrl().isEmpty() && !gitManager.isRepoCloned() && needsRepo) {
         if (!gitManager.cloneRepo()) {
             QMessageBox::warning(nullptr, "fangit",
                 "Failed to clone repository.\n\n"
                 "Check your config.toml repo URL and credentials.\n\n"
                 + gitManager.lastError());
         }
+    }
+
+    // Ensure workflow and notification issues exist in repo
+    if (gitManager.isRepoCloned()) {
+        workflowManager.ensureWorkflowExists();
     }
 
     // Connect watcher to batcher

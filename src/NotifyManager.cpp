@@ -5,10 +5,10 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QUrl>
 #include <QProcess>
 #include <QDebug>
-#include <QEventLoop>
 
 NotifyManager::NotifyManager(ConfigManager &config, QObject *parent)
     : QObject(parent)
@@ -20,17 +20,11 @@ void NotifyManager::notify(const QString &channelName, const QString &message)
 {
     const NotifyChannel *ch = findChannel(channelName);
     if (!ch) {
-        // Fall back to issue #1 with default emoji
-        qDebug() << "Channel" << channelName << "not found, using issue #1";
-        notifyIssue(1, QString(), message);
+        qWarning() << "Channel" << channelName << "not found";
+        emit notifyError("Channel not found: " + channelName);
         return;
     }
 
-    notifyIssue(ch->issue, ch->emoji, message);
-}
-
-void NotifyManager::notifyIssue(int issueNumber, const QString &emoji, const QString &message)
-{
     RepoInfo info = parseRepoUrl();
     if (!info.valid) {
         emit notifyError("Cannot parse repo owner/name from URL");
@@ -43,15 +37,84 @@ void NotifyManager::notifyIssue(int issueNumber, const QString &emoji, const QSt
         return;
     }
 
-    // Build the comment body with @mention
-    QString prefix = emoji.isEmpty() ? QString() : emoji + " ";
+    qDebug() << "Notify:" << channelName << "via"
+             << (ch->mode == NotifyChannel::Dispatch ? "dispatch" : "direct")
+             << "→ issue #" << ch->issue;
+
+    if (ch->mode == NotifyChannel::Direct) {
+        notifyViaDirect(info, pat, *ch, message);
+    } else {
+        notifyViaDispatch(info, pat, *ch, message);
+    }
+}
+
+// ── Dispatch mode ──────────────────────────────────────────────────────────
+// Triggers a GitHub Action via workflow_dispatch API.
+// The Action runs as github-actions[bot] and posts the issue comment,
+// which generates a notification even for the repo owner (single account).
+
+void NotifyManager::notifyViaDispatch(const RepoInfo &info, const QString &pat,
+                                       const NotifyChannel &channel, const QString &message)
+{
+    QString prefix = channel.emoji.isEmpty() ? QString() : channel.emoji + " ";
+
+    QUrl url(QString("https://api.github.com/repos/%1/%2/actions/workflows/notify.yml/dispatches")
+        .arg(info.owner, info.repo));
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", QString("token %1").arg(pat).toUtf8());
+    request.setRawHeader("Accept", "application/vnd.github.v3+json");
+    request.setRawHeader("User-Agent", "fangit");
+
+    QJsonObject inputs;
+    inputs["channel"] = channel.pathName;
+    inputs["issue"] = QString::number(channel.issue);
+    inputs["message"] = prefix + message;
+    inputs["github_user"] = m_config.githubUser();
+
+    QJsonObject json;
+    json["ref"] = m_config.repoBranch();
+    json["inputs"] = inputs;
+
+    QNetworkReply *reply = m_network.post(request, QJsonDocument(json).toJson());
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply, channel]() {
+        reply->deleteLater();
+
+        int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // workflow_dispatch returns 204 No Content on success
+        if (httpStatus == 204) {
+            qDebug() << "Dispatch triggered for channel" << channel.pathName
+                     << "→ issue #" << channel.issue;
+            emit notifySent(channel.pathName, true);
+        } else {
+            QString err = QString("Dispatch failed (HTTP %1): %2")
+                .arg(httpStatus)
+                .arg(QString::fromUtf8(reply->readAll()));
+            qWarning() << err;
+            emit notifyError(err);
+            emit notifySent(channel.pathName, false);
+        }
+    });
+}
+
+// ── Direct mode ────────────────────────────────────────────────────────────
+// Posts an issue comment directly via the GitHub API.
+// Faster (~20s) but requires a second GitHub account for notifications,
+// since GitHub suppresses self-notifications.
+
+void NotifyManager::notifyViaDirect(const RepoInfo &info, const QString &pat,
+                                     const NotifyChannel &channel, const QString &message)
+{
+    QString prefix = channel.emoji.isEmpty() ? QString() : channel.emoji + " ";
     QString body = QString("@%1 %2%3")
         .arg(m_config.githubUser(), prefix, message);
 
-    // POST to GitHub Issues API
     QUrl url(QString("https://api.github.com/repos/%1/%2/issues/%3/comments")
         .arg(info.owner, info.repo)
-        .arg(issueNumber));
+        .arg(channel.issue));
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -64,25 +127,26 @@ void NotifyManager::notifyIssue(int issueNumber, const QString &emoji, const QSt
 
     QNetworkReply *reply = m_network.post(request, QJsonDocument(json).toJson());
 
-    connect(reply, &QNetworkReply::finished, this, [this, reply, issueNumber]() {
+    connect(reply, &QNetworkReply::finished, this, [this, reply, channel]() {
         reply->deleteLater();
 
-        bool success = (reply->error() == QNetworkReply::NoError);
         int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (!success || httpStatus < 200 || httpStatus >= 300) {
-            QString err = QString("Notify failed (HTTP %1): %2")
+        if (httpStatus >= 200 && httpStatus < 300) {
+            qDebug() << "Direct notification posted to issue #" << channel.issue;
+            emit notifySent(channel.pathName, true);
+        } else {
+            QString err = QString("Direct notify failed (HTTP %1): %2")
                 .arg(httpStatus)
                 .arg(QString::fromUtf8(reply->readAll()));
             qWarning() << err;
             emit notifyError(err);
-            emit notifySent(QString::number(issueNumber), false);
-        } else {
-            qDebug() << "Notification posted to issue" << issueNumber;
-            emit notifySent(QString::number(issueNumber), true);
+            emit notifySent(channel.pathName, false);
         }
     });
 }
+
+// ── Helpers ────────────────────────────────────────────────────────────────
 
 bool NotifyManager::channelRequiresPush(const QString &channelName) const
 {
@@ -125,7 +189,6 @@ NotifyManager::RepoInfo NotifyManager::parseRepoUrl() const
 QString NotifyManager::findPat() const
 {
     // Try to get PAT from git's credential helper (same one used for pushes)
-    // This piggybacks on the credential the user already configured for git
     QProcess process;
     process.start("git", {"credential", "fill"});
     if (!process.waitForStarted(5000))

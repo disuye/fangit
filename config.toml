@@ -48,19 +48,27 @@ emoji = "📝"
 
 # Notification channels — post directly to GitHub issues (no git, no files)
 # Each channel maps to an issue number in the repo
-# action = "notify"       -> post issue comment only (default)
-# action = "notify+push"  -> post comment AND push push_dir to repo
+#
+# mode = "dispatch"  -> triggers GitHub Action, posts as github-actions[bot] (default)
+#                       works with single account, ~35s latency
+# mode = "direct"   -> posts issue comment via API
+#                       faster (~20s) but needs a second GitHub account for notifications
+#
+# action = "notify"       -> notification only (default)
+# action = "notify+push"  -> notification AND push push_dir to repo
 
 [[channel]]
 path_name = "status"
 issue = 1
 emoji = "🟢"
+mode = "dispatch"
 action = "notify"
 
 [[channel]]
 path_name = "errors"
 issue = 2
 emoji = "🔴"
+mode = "dispatch"
 action = "notify+push"
 push_dir = "~/SMPLR/logs"
 
@@ -68,4 +76,5 @@ push_dir = "~/SMPLR/logs"
 path_name = "log"
 issue = 3
 emoji = "📝"
+mode = "dispatch"
 action = "notify"

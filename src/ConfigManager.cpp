@@ -105,6 +105,12 @@ bool ConfigManager::load()
                         ch.issue = toml::find<int>(c, "issue");
                     if (c.contains("emoji"))
                         ch.emoji = QString::fromStdString(toml::find<std::string>(c, "emoji"));
+                    if (c.contains("mode")) {
+                        std::string mode = toml::find<std::string>(c, "mode");
+                        ch.mode = (mode == "direct")
+                            ? NotifyChannel::Direct
+                            : NotifyChannel::Dispatch;
+                    }
                     if (c.contains("action")) {
                         std::string action = toml::find<std::string>(c, "action");
                         ch.action = (action == "notify+push")
@@ -178,6 +184,7 @@ bool ConfigManager::save()
         out << "path_name = \"" << ch.pathName << "\"\n";
         out << "issue = " << ch.issue << "\n";
         out << "emoji = \"" << ch.emoji << "\"\n";
+        out << "mode = \"" << (ch.mode == NotifyChannel::Direct ? "direct" : "dispatch") << "\"\n";
         out << "action = \"" << (ch.action == NotifyChannel::NotifyAndPush ? "notify+push" : "notify") << "\"\n";
         if (!ch.pushDir.isEmpty())
             out << "push_dir = \"" << ch.pushDir << "\"\n";

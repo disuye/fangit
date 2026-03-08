@@ -17,3 +17,17 @@
 331	1189	1772966077866588244	CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o	465ac0b1119e2f07
 331	1762	1772966077866989037	CMakeFiles/fangit.dir/src/ConfigManager.cpp.o	5d37447a83d0d0a3
 1762	1843	1772966079297405998	fangit.app/Contents/MacOS/fangit	d68a6b642f646db8
+6	255	1772969193303591000	fangit_autogen/timestamp	e567d0cef93c39d7
+6	255	1772969193303591000	fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+6	255	1772969193303591000	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/timestamp	e567d0cef93c39d7
+6	255	1772969193303591000	/Users/disuye/Files+Work/VSCode/fangit/build-ninja/fangit_autogen/mocs_compilation.cpp	e567d0cef93c39d7
+256	950	1772969193312350623	CMakeFiles/fangit.dir/src/GitManager.cpp.o	d9010b1aa7e353ea
+256	988	1772969193312540166	CMakeFiles/fangit.dir/src/WorkflowManager.cpp.o	b75899c81719b3db
+256	1005	1772969193312442832	CMakeFiles/fangit.dir/src/CommitBatcher.cpp.o	11cd256be07e322d
+257	1031	1772969193312649000	CMakeFiles/fangit.dir/src/NotifyManager.cpp.o	c5e5850738172f3e
+256	1062	1772969193312260498	CMakeFiles/fangit.dir/src/WatcherManager.cpp.o	2e859d6037ed6683
+256	1079	1772969193311954746	CMakeFiles/fangit.dir/src/main.cpp.o	125afde197403118
+256	1110	1772969193311796995	CMakeFiles/fangit.dir/fangit_autogen/mocs_compilation.cpp.o	465ac0b1119e2f07
+256	1115	1772969193312073163	CMakeFiles/fangit.dir/src/TrayManager.cpp.o	4debcb5bff8df55e
+256	1677	1772969193312170831	CMakeFiles/fangit.dir/src/ConfigManager.cpp.o	5d37447a83d0d0a3
+1678	1758	1772969194733715196	fangit.app/Contents/MacOS/fangit	d68a6b642f646db8
