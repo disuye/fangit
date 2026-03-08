@@ -30,6 +30,18 @@ int CommitBatcher::pendingCount() const
 void CommitBatcher::enqueueFiles(const QString &pathName, const QString &emoji,
                                   const QString &action, const QStringList &files)
 {
+    // Notify actions fire immediately — no debounce needed
+    if (isNotifyAction(action)) {
+        PendingBatch batch;
+        batch.pathName = pathName;
+        batch.emoji = emoji;
+        batch.action = action;
+        batch.files = files;
+        processNotifyBatch(batch);
+        return;
+    }
+
+    // Sync actions accumulate and debounce
     auto &batch = m_pending[pathName];
     batch.pathName = pathName;
     batch.emoji = emoji;
@@ -42,8 +54,11 @@ void CommitBatcher::enqueueFiles(const QString &pathName, const QString &emoji,
 
     emit pendingCountChanged(pendingCount());
 
-    // Restart debounce timer
-    m_debounceTimer.start(m_config.batchInterval() * 1000);
+    // Start timer only if not already running — don't restart on each new file.
+    // This means the timer fires batch_interval seconds after the FIRST change,
+    // and commits whatever has accumulated. No starvation from busy folders.
+    if (!m_debounceTimer.isActive())
+        m_debounceTimer.start(m_config.batchInterval() * 1000);
 }
 
 void CommitBatcher::pushNow()
@@ -73,25 +88,16 @@ void CommitBatcher::onTimerFired()
     emit batchStarted();
 
     bool allSuccess = true;
-    bool hasSyncBatches = false;
 
-    // Route each batch based on its action
+    // Only sync batches reach here — notify batches fire immediately in enqueueFiles
     for (auto it = m_pending.begin(); it != m_pending.end(); ++it) {
         const PendingBatch &batch = it.value();
-
-        if (isNotifyAction(batch.action)) {
-            processNotifyBatch(batch);
-        } else {
-            processSyncBatch(batch, allSuccess);
-            hasSyncBatches = true;
-        }
+        processSyncBatch(batch, allSuccess);
     }
 
     // Push all sync commits in one go
-    if (hasSyncBatches) {
-        if (!m_git.push())
-            allSuccess = false;
-    }
+    if (!m_git.push())
+        allSuccess = false;
 
     m_pending.clear();
     emit pendingCountChanged(0);

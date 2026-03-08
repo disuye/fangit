@@ -33,8 +33,7 @@ private slots:
     void onScanTimer();
 
 private:
-    void scanDirectory(const QString &watchPath, const QString &pathName,
-                       const QString &emoji, const QString &action);
+    void scanDirectory(const QString &pathName);
 
     QFileSystemWatcher m_watcher;
     QTimer m_scanTimer;
@@ -44,6 +43,6 @@ private:
         QMap<QString, qint64> knownFiles; // path -> last modified timestamp
     };
 
-    QMap<QString, WatchInfo> m_watches; // path -> info
+    QMap<QString, WatchInfo> m_watches; // pathName -> info (keyed by pathName, not filesystem path)
     bool m_paused = false;
 };

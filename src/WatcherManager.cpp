@@ -49,14 +49,29 @@ void WatcherManager::addWatch(const WatchEntry &entry)
     info.entry = entry;
     info.entry.path = absPath;
 
-    // Build initial snapshot of files
+    // Build initial snapshot of files (filtered by this watch's extensions)
     QDirIterator it(absPath, QDir::Files, QDirIterator::Subdirectories);
     while (it.hasNext()) {
         it.next();
+
+        // Only snapshot files matching this watch's extension filter
+        if (!entry.extensions.isEmpty()) {
+            QString suffix = it.fileInfo().suffix();
+            if (!entry.extensions.contains(suffix, Qt::CaseInsensitive))
+                continue;
+        }
+
+        // Skip hidden files
+        if (it.fileName().startsWith('.'))
+            continue;
+
         info.knownFiles[it.filePath()] = it.fileInfo().lastModified().toSecsSinceEpoch();
     }
 
-    m_watches[absPath] = info;
+    // Key by pathName — each watch gets its own entry even if paths overlap
+    m_watches[entry.pathName] = info;
+
+    // Add filesystem path to QFileSystemWatcher (safe to add same path twice — Qt deduplicates)
     m_watcher.addPath(absPath);
 
     // Also watch subdirectories
@@ -67,17 +82,28 @@ void WatcherManager::addWatch(const WatchEntry &entry)
     }
 
     qDebug() << "Watching:" << entry.pathName << "at" << absPath
-             << "(" << info.knownFiles.size() << "existing files)";
+             << "(" << info.knownFiles.size() << "existing files,"
+             << "extensions:" << (entry.extensions.isEmpty() ? "all" : entry.extensions.join(","))
+             << "action:" << (entry.action.isEmpty() ? "sync" : entry.action) << ")";
 }
 
 void WatcherManager::removeWatch(const QString &pathName)
 {
-    for (auto it = m_watches.begin(); it != m_watches.end(); ++it) {
-        if (it->entry.pathName == pathName) {
-            m_watcher.removePath(it.key());
-            m_watches.erase(it);
-            break;
+    auto it = m_watches.find(pathName);
+    if (it != m_watches.end()) {
+        QString watchPath = it->entry.path;
+        m_watches.erase(it);
+
+        // Only remove the filesystem path if no other watch uses it
+        bool pathStillUsed = false;
+        for (const auto &info : m_watches) {
+            if (info.entry.path == watchPath) {
+                pathStillUsed = true;
+                break;
+            }
         }
+        if (!pathStillUsed)
+            m_watcher.removePath(watchPath);
     }
 
     if (m_watches.isEmpty())
@@ -101,12 +127,10 @@ void WatcherManager::onDirectoryChanged(const QString &path)
 {
     if (m_paused) return;
 
-    // Find which watch this belongs to
+    // Scan ALL watches whose path matches — no break, multiple watches can share a directory
     for (auto &info : m_watches) {
         if (path.startsWith(info.entry.path)) {
-            scanDirectory(info.entry.path, info.entry.pathName,
-                         info.entry.emoji, info.entry.action);
-            break;
+            scanDirectory(info.entry.pathName);
         }
     }
 
@@ -119,17 +143,18 @@ void WatcherManager::onScanTimer()
 {
     if (m_paused) return;
 
-    for (const auto &key : m_watches.keys()) {
-        auto &info = m_watches[key];
-        scanDirectory(info.entry.path, info.entry.pathName,
-                     info.entry.emoji, info.entry.action);
+    for (const auto &pathName : m_watches.keys()) {
+        scanDirectory(pathName);
     }
 }
 
-void WatcherManager::scanDirectory(const QString &watchPath, const QString &pathName,
-                                    const QString &emoji, const QString &action)
+void WatcherManager::scanDirectory(const QString &pathName)
 {
-    auto &info = m_watches[watchPath];
+    auto watchIt = m_watches.find(pathName);
+    if (watchIt == m_watches.end()) return;
+
+    WatchInfo &info = watchIt.value();
+    const QString &watchPath = info.entry.path;
     QStringList changedFiles;
 
     QDirIterator it(watchPath, QDir::Files, QDirIterator::Subdirectories);
@@ -141,7 +166,7 @@ void WatcherManager::scanDirectory(const QString &watchPath, const QString &path
         qint64 modified = it.fileInfo().lastModified().toSecsSinceEpoch();
         currentFiles.insert(filePath);
 
-        // Check extension filter
+        // Check extension filter for THIS watch
         if (!info.entry.extensions.isEmpty()) {
             QString suffix = it.fileInfo().suffix();
             if (!info.entry.extensions.contains(suffix, Qt::CaseInsensitive))
@@ -161,7 +186,7 @@ void WatcherManager::scanDirectory(const QString &watchPath, const QString &path
         }
     }
 
-    // Detect deleted files (update snapshot, but don't emit — we're append-only by design)
+    // Detect deleted files (update snapshot, but don't emit — append-only by design)
     QStringList toRemove;
     for (auto it = info.knownFiles.begin(); it != info.knownFiles.end(); ++it) {
         if (!currentFiles.contains(it.key()))
@@ -172,6 +197,6 @@ void WatcherManager::scanDirectory(const QString &watchPath, const QString &path
 
     if (!changedFiles.isEmpty()) {
         qDebug() << "Changes detected in" << pathName << ":" << changedFiles.size() << "file(s)";
-        emit filesChanged(pathName, emoji, action, changedFiles);
+        emit filesChanged(pathName, info.entry.emoji, info.entry.action, changedFiles);
     }
 }
