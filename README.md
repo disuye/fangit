@@ -408,6 +408,14 @@ Yes. Qt6 provides QFileSystemWatcher (inotify backend) and QSystemTrayIcon. Buil
 
 ---
 
+## TODO
+
+- fangit CLI with hooks for external apps & processes
+- onboarding 'wizard' dialogs for people who have a github account but otherwise no clue
+- various levels of 'courtesy' git options to keep monitoring repo clean
+
+---
+
 ## License
 
 MIT
