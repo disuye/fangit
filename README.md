@@ -7,8 +7,8 @@ Fast, zero-config local file watching → auto git commit → push → GitHub as
 <div align="center" style="width: 100%; max-width: 1000px">
 <img src="./images/we-fangit.png" style="width: 100%; max-width: 1000px;">
 <br>
-<b><small>War Boy: "Shall we run them around into our backup?"<br>
-Furiosa: "No, we're good. We fang it!"</small></b>
+<b>War Boy:</b> "Shall we run them around into our backup?"<br>
+<b>Furiosa:</b> "No, we're good. We fang it!"
 </div>
 
 ## Modes
