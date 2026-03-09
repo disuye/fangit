@@ -6,8 +6,8 @@ Fast, zero-config local file watching → auto git commit → push → GitHub as
 
 <img src="./images/we-fangit.png" style="width: 50vw; max-width: 1000px;">
 
-War Boy: "Shall we run them around into our backup?"
-Furiosa: "No, we're good. We fang it!"
+<b>War Boy: "Shall we run them around into our backup?"<br>
+Furiosa: "No, we're good. We fang it!"</b>
 
 Fangit has three modes:
 
