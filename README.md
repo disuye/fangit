@@ -21,7 +21,7 @@ Fangit has three modes:
 
 All three deliver push notifications to your phone via the GitHub mobile app.
 
-Watches can be routed to either sync or notify mode per-entry — the same folder can archive some files to git while sending lightweight notifications for others.
+Watches can be routed to either sync or notify mode per-entry — the same folder can archive some files to git while sending lightweight notifications for others. An optional regex filter (`match`) lets you only act on lines that matter.
 
 ## Why
 
@@ -122,7 +122,7 @@ auth = "https"    # "https" or "ssh"
 
 ### Watch directories
 
-Each `[[watch]]` block monitors a local folder. What happens when files change depends on the `action` field.
+Each `[[watch]]` block monitors a local folder. What happens when files change depends on the `action` and `match` fields.
 
 ```toml
 [[watch]]
@@ -131,6 +131,7 @@ path = "~/SMPLR/recipes"           # local folder to watch
 emoji = "🎵"                       # prefix for commit/notification messages
 extensions = ["txt", "json"]       # optional — only watch these file types
 action = "sync"                    # optional — see routing below
+match = "ERROR|WARN"               # optional — regex filter, see below
 ```
 
 `path_name` is important: it becomes the subdirectory in the git repo (for sync mode). Files from `~/SMPLR/recipes/` appear in the repo under `SMPLR/`.
@@ -144,9 +145,50 @@ The `action` field controls what happens when files change in the watched direct
 | `action` value | Behaviour |
 |----------------|-----------|
 | `"sync"` or omitted | Git commit + push (default). Files archived to repo, notification via Actions. |
-| A `[[channel]]` path_name | Skip git. Send a notification via that channel with the filenames. |
+| A `[[channel]]` path_name | Skip git. Send a notification via that channel with file content. |
 
-This means you can watch the **same folder** with different extensions routed to different behaviours:
+If `action` is set to a string that doesn't match any channel, it falls through to sync mode as a safe default.
+
+#### Content filtering — the `match` field
+
+The `match` field is an optional regex pattern. When set, fangit scans new lines added to changed files and only acts if at least one line matches the pattern.
+
+| `action` | `match` | Behaviour |
+|----------|---------|-----------|
+| `"sync"` | not set | Sync all changed files (default) |
+| `"sync"` | set | Only sync files where new lines match the regex |
+| channel name | not set | Notify with last new line from each changed file |
+| channel name | set | Only notify when new lines match; include the matched line |
+
+Fangit only scans **new content** — it tracks byte offsets per file and reads from where it left off. A 50MB log file that grows by 3 lines only scans those 3 lines.
+
+#### Notification message format
+
+Notifications are designed for the iOS lock screen — the most important information comes first:
+
+**Single file with match:**
+```
+→ "Session ended: duration 4h32m" (12 new lines, 1 match)
+🟢 SMPLR: stream.log
+```
+
+**Single file without match filter:**
+```
+→ "ambient_set_042 started" (3 new lines)
+🟢 SMPLR: stream.log
+```
+
+**Multiple files:**
+```
+→ "FATAL: pipe broke" (2 match across 3 files)
+🟢 SMPLR
+  stream.log (45 new lines)
+  error.log (2 new lines) → "FATAL: pipe broke"
+```
+
+#### Full routing example
+
+The same folder can have multiple watches with different extensions routed to different behaviours:
 
 ```toml
 # .txt recipe files → archive to git repo
@@ -157,26 +199,41 @@ emoji = "🎵"
 extensions = ["txt"]
 action = "sync"
 
-# .log files → notify only, no git
+# .log files → notify only when errors occur
 [[watch]]
 path_name = "SMPLR-errors"
 path = "/Volumes/Chainsaw/SMPLR/Stream"
 emoji = "🔴"
 extensions = ["log"]
-action = "errors"
+action = "error"
+match = "ERROR|FATAL|SIGPIPE"
 
-# The channel that "errors" routes to
+# .log files → notify on session start/end
+[[watch]]
+path_name = "SMPLR-status"
+path = "/Volumes/Chainsaw/SMPLR/Stream"
+emoji = "🟢"
+extensions = ["log"]
+action = "status"
+match = "Started:|Session ended:"
+
+# Channels these route to
 [[channel]]
-path_name = "errors"
+path_name = "status"
+issue = 1
+emoji = "🟢"
+mode = "dispatch"
+action = "notify"
+
+[[channel]]
+path_name = "error"
 issue = 2
 emoji = "🔴"
 mode = "dispatch"
 action = "notify"
 ```
 
-When a `.txt` file appears, it gets committed and pushed to git. When a `.log` file appears, fangit sends a notification listing the filename(s) — no git, no file upload, just a ping on your phone.
-
-If `action` is set to a string that doesn't match any channel, it falls through to sync mode as a safe default.
+When a `.txt` file appears, it gets committed and pushed to git. When a `.log` file is updated with `Started:` or `Session ended:`, a notification fires to the status channel. When a `.log` file contains `ERROR`, the error channel fires. Normal log lines are silently ignored.
 
 ### Notification channels
 
@@ -233,32 +290,37 @@ push_dir = "~/myapp/logs"       # this directory gets committed + pushed
 File appears in ~/watched-folder/
   → fangit detects change (QFileSystemWatcher + periodic scan)
     → Debounce timer waits (batch_interval seconds)
-      → File copied into local repo clone
-        → git add + commit + push
-          → GitHub Actions workflow fires
-            → github-actions[bot] posts issue comment @mentioning you
-              → iOS push notification
+      → [if match set: scan new lines, skip if no match]
+        → File copied into local repo clone
+          → git add + commit + push
+            → GitHub Actions workflow fires
+              → github-actions[bot] posts issue comment @mentioning you
+                → iOS push notification
 ```
 
 **Use cases:** Archiving generative outputs, collecting batch job results, backing up config changes, monitoring what a machine produces over time.
 
 **Latency:** ~45-60 seconds (batch_interval + Actions runner ~15s + Apple push ~20s).
 
-### Notify via watch (watch → channel → notification)
+### Notify via watch (watch → scan → channel → notification)
 
 ```
-File appears in ~/watched-folder/
+File changes in ~/watched-folder/
   → fangit detects change
-    → Debounce timer waits (batch_interval seconds)
-      → Notification sent via channel with filename(s)
-        → iOS push notification
+    → FileScanner reads new bytes since last offset
+      → [if match set: filter lines by regex]
+        → MessageFormatter builds content-first message
+          → NotifyManager posts to channel
+            → iOS push notification
 ```
 
-**Use cases:** Lightweight monitoring — you want to know a file appeared without archiving it. Error log detection, render completion alerts.
+Notify-mode watches fire immediately — no debounce. The scan only reads new bytes appended since the last check, so even large log files are handled efficiently.
 
-**Latency:** ~30-35s (dispatch) or ~20-30s (direct) + batch_interval.
+**Use cases:** Monitoring log output, error detection, session tracking, render completion alerts — anything where you care about *what changed* not just *that something changed*.
 
-### Notify via tray menu or API
+**Latency:** ~30-35s (dispatch) or ~20-30s (direct).
+
+### Notify via tray menu
 
 ```
 Tray menu → Notify → channel name
@@ -333,11 +395,13 @@ If you need to recreate it, delete the file from your repo and restart fangit.
 main.cpp
 ├── ConfigManager        — TOML config (toml11), read/write, path resolution
 ├── GitManager           — git CLI wrapper (clone, add, commit, push, pull)
-├── WatcherManager       — QFileSystemWatcher + configurable periodic scan
-├── CommitBatcher        — Debounce + routing: sync (git) or notify (channel)
+├── WatcherManager       — QFileSystemWatcher + configurable periodic scan, byte offset tracking
+├── CommitBatcher        — Debounce + routing: sync (git) or notify (channel), uses FileScanner
+├── FileScanner          — Reads new bytes from files, applies regex, returns structured results
+├── MessageFormatter     — Formats scan results for notifications, commits, or any output target
 ├── WorkflowManager      — Auto-creates .github/workflows/notify.yml
 ├── NotifyManager        — GitHub API: dispatch (workflow_dispatch) + direct (issue comment)
-└── TrayManager          — System tray icon, menu, status display
+└── TrayManager          — System tray icon, menu, status display (dot/logo/tint styles)
 ```
 
 ### Codebase
@@ -350,7 +414,8 @@ fangit/
 ├── fonts/FiraCode-VariableFont_wght.ttf
 ├── images/
 │   ├── AppIcon.png|.icns
-│   └── TrayIcon.png              # White silhouette for tray (dark/light mode)
+│   ├── TrayIcon.png              # White silhouette for tray (dark/light mode)
+│   └── we-fangit.png
 ├── linux/AppIcon-512.png
 ├── scripts/
 │   ├── ninja.sh                  # Debug build
@@ -360,11 +425,13 @@ fangit/
 ├── src/
 │   ├── main.cpp                  # Entry point, version, component wiring
 │   ├── resources.qrc             # Embedded fonts, icons, default config
-│   ├── ConfigManager.h/.cpp      # TOML config, tray style, watch/channel parsing
+│   ├── ConfigManager.h/.cpp      # TOML config, tray style, watch/channel/match parsing
 │   ├── TrayManager.h/.cpp        # System tray: dot/logo/tint icon styles
-│   ├── WatcherManager.h/.cpp     # QFileSystemWatcher + periodic scan
+│   ├── WatcherManager.h/.cpp     # QFileSystemWatcher + periodic scan + byte offset tracking
 │   ├── GitManager.h/.cpp         # git CLI wrapper
-│   ├── CommitBatcher.h/.cpp      # Debounce, sync/notify routing, commit formatting
+│   ├── CommitBatcher.h/.cpp      # Debounce, sync/notify routing, match-based filtering
+│   ├── FileScanner.h/.cpp        # File diff reader, regex matching, structured scan results
+│   ├── MessageFormatter.h/.cpp   # Content-first message formatting for all output targets
 │   ├── WorkflowManager.h/.cpp    # Auto-creates GitHub Actions workflow
 │   └── NotifyManager.h/.cpp      # GitHub API: dispatch + direct modes
 ├── third_party/toml11/           # Vendored, header-only
@@ -378,6 +445,9 @@ fangit/
 - **Append-only by design** — watches for new/modified files, ignores deletes.
 - **Single workflow file** — handles both push-triggered and dispatch-triggered notifications.
 - **Watch→channel routing** — `action` field on watches connects to channels by name. No special syntax, just matching strings.
+- **Byte offset scanning** — FileScanner tracks where it last read each file. Only new content is scanned, even for large log files.
+- **Content-first notifications** — MessageFormatter puts the most important line first, optimised for iOS lock screen banners.
+- **Regex match filtering** — optional `match` field works with both sync and notify. Only act when something meaningful happens.
 - **LSUIElement** — menu bar only, no dock icon (macOS).
 - **Cross-platform** — Qt6 with QFileSystemWatcher (fsevents on macOS, inotify on Linux), QSystemTrayIcon for tray.
 
@@ -402,6 +472,12 @@ Sync mode queues commits locally. When the network returns, the next push sends 
 
 **Can I watch the same folder with different actions?**
 Yes. Use multiple `[[watch]]` blocks with the same `path` but different `extensions` and `action` values. For example, `.txt` files sync to git while `.log` files trigger a notification.
+
+**What about large log files?**
+FileScanner tracks byte offsets per file. It only reads new bytes appended since the last scan. A 50MB log file that grows by 3 lines only scans those 3 lines.
+
+**Can I filter which log lines trigger notifications?**
+Yes. Set `match = "ERROR|FATAL|WARN"` (or any regex) on a `[[watch]]` block. Only lines matching the pattern will trigger the action. Unmatched changes are silently ignored.
 
 **Can I use this on Linux?**
 Yes. Qt6 provides QFileSystemWatcher (inotify backend) and QSystemTrayIcon. Build as an AppImage for distribution.
