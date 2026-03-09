@@ -4,6 +4,9 @@
 
 // ── Notify formatting ──────────────────────────────────────────────────────
 // Used when watch action routes to a channel
+//
+// Layout principle: lead with the content (what happened), then metadata.
+// The first line is what the user sees on the iOS notification banner.
 
 QString MessageFormatter::formatNotify(const WatchScanResult &scan) const
 {
@@ -17,33 +20,52 @@ QString MessageFormatter::formatNotify(const WatchScanResult &scan) const
         const auto &f = scan.files.first();
 
         if (f.hasMatch) {
-            // Show last matched line
             QString matchLine = f.matchedLines.last();
-            return emoji + " " + scan.pathName + ": " + f.fileName
-                 + " (" + QString::number(f.newLineCount) + " new lines, "
-                 + QString::number(f.matchedLines.size()) + " matched)\n"
-                 + "Match: \"" + matchLine + "\"";
+            return "\xe2\x86\x92 \"" + matchLine + "\" "
+                 + "(" + QString::number(f.newLineCount) + " new lines, "
+                 + QString::number(f.matchedLines.size()) + " match)\n"
+                 + emoji + " " + scan.pathName + ": " + f.fileName;
         }
 
         // No match pattern or no matches — show last line
-        return emoji + " " + scan.pathName + ": " + f.fileName
-             + " (" + QString::number(f.newLineCount) + " new lines)\n"
-             + "Latest: \"" + f.lastLine + "\"";
+        return "\xe2\x86\x92 \"" + f.lastLine + "\" "
+             + "(" + QString::number(f.newLineCount) + " new lines)\n"
+             + emoji + " " + scan.pathName + ": " + f.fileName;
     }
 
     // Multiple files
-    QString msg = emoji + " " + scan.pathName + ": "
-                + QString::number(scan.files.size()) + " files changed";
+    if (scan.hasAnyMatch) {
+        // Lead with the last match from the most recent matched file
+        QString lastMatch;
+        for (int i = scan.files.size() - 1; i >= 0; --i) {
+            if (scan.files[i].hasMatch) {
+                lastMatch = scan.files[i].matchedLines.last();
+                break;
+            }
+        }
+        QString msg = "\xe2\x86\x92 \"" + lastMatch + "\" "
+                    + "(" + QString::number(scan.totalMatches) + " match across "
+                    + QString::number(scan.files.size()) + " files)\n"
+                    + emoji + " " + scan.pathName;
 
-    if (scan.hasAnyMatch)
-        msg += " (" + QString::number(scan.totalMatches) + " matched)";
+        for (const auto &f : scan.files) {
+            msg += "\n  " + f.fileName + " (" + QString::number(f.newLineCount) + " new lines)";
+            if (f.hasMatch)
+                msg += " \xe2\x86\x92 \"" + f.matchedLines.last() + "\"";
+        }
+        return msg;
+    }
+
+    // Multiple files, no match filter — lead with last file's last line
+    const auto &lastFile = scan.files.last();
+    QString msg = "\xe2\x86\x92 \"" + lastFile.lastLine + "\" "
+                + "(" + QString::number(scan.files.size()) + " files changed)\n"
+                + emoji + " " + scan.pathName;
 
     for (const auto &f : scan.files) {
         msg += "\n  " + f.fileName + " (" + QString::number(f.newLineCount) + " new lines)";
-        if (f.hasMatch)
-            msg += " Match: \"" + f.matchedLines.last() + "\"";
-        else if (!f.lastLine.isEmpty())
-            msg += " Latest: \"" + f.lastLine + "\"";
+        if (!f.lastLine.isEmpty())
+            msg += " \xe2\x86\x92 \"" + f.lastLine + "\"";
     }
 
     return msg;
@@ -78,9 +100,11 @@ QString MessageFormatter::formatFileList(const QString &pathName, const QString 
     QString e = emoji.isEmpty() ? QString::fromUtf8("\xF0\x9F\x93\x81") : emoji;
 
     if (files.size() == 1)
-        return e + " " + pathName + ": " + files.first();
+        return "\xe2\x86\x92 " + files.first() + "\n"
+             + e + " " + pathName;
 
-    QString msg = e + " " + pathName + ": " + QString::number(files.size()) + " file(s)";
+    QString msg = "\xe2\x86\x92 " + QString::number(files.size()) + " file(s)\n"
+                + e + " " + pathName;
     if (files.size() <= 5) {
         for (const auto &f : files)
             msg += "\n  " + f;
