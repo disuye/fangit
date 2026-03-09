@@ -2,6 +2,8 @@
 
 **Fang it!** — a lightweight system tray app that turns a GitHub repo into a notification and file archiving system. No server, no extra apps, no infrastructure. Just a GitHub account, one private repo to relay monitoring data, and the GitHub iOS/Android app.
 
+Fast, zero-config local file watching → auto git commit → push → GitHub as the auth/notification/data layer.
+
 <img src="./images/we-fangit.png" style="width: 50vw; max-width: 1000px;">
 
 Fangit has three modes:
