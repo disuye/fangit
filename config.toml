@@ -15,7 +15,7 @@ batch_interval = 30
 # Lower = faster detection, higher = less CPU
 scan_interval = 30
 
-# Tray icon style: false = colored dot, true = app icon with tint
+# Tray icon style (default is dot): 
 # dot (color dot) | logo (logo + color dot) | tint (color logo)
 tray_style = "tint"
 
