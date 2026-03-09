@@ -37,6 +37,10 @@ set(SOURCES
     src/WorkflowManager.cpp
     src/NotifyManager.h
     src/NotifyManager.cpp
+    src/FileScanner.h
+    src/FileScanner.cpp
+    src/MessageFormatter.h
+    src/MessageFormatter.cpp
     src/resources.qrc
 )
 

@@ -13,6 +13,7 @@ struct WatchEntry {
     QString path;
     QString emoji;
     QString action;     // "sync" (default) or a channel path_name for notify routing
+    QString match;      // optional — regex pattern, only act on lines matching this
     QStringList extensions; // optional filter
 };
 

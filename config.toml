@@ -2,7 +2,6 @@
 # ── FANGIT config ────────────────────────────────────────────────
 # https://github.com/disuye/fangit
 # ─────────────────────────────────────────────────────────────────
-#
 
 [general]
 # GitHub username to @mention in notifications
@@ -15,7 +14,7 @@ batch_interval = 30
 # Lower = faster detection, higher = less CPU
 scan_interval = 30
 
-# Tray icon style (default is dot): 
+# Tray icon style (default is dot):
 # dot (color dot) | logo (logo + color dot) | tint (color logo)
 tray_style = "tint"
 
@@ -32,53 +31,70 @@ auth = "https"
 
 # ─────────────────────────────────────────────────────────────────
 # ── Watch directories ────────────────────────────────────────────
-# Sync mode: watches a folder, commits + pushes changes to repo.
-# Triggers iOS notification via GitHub Actions (~45-60s).
+# Watches a folder for new/changed files.
+# action controls what happens:
+#   "sync"          = git commit + push (default)
+#   "channel_name"  = send notification via matching [[channel]]
+# match is an optional regex filter — only act when new lines match.
 # ─────────────────────────────────────────────────────────────────
-#
 
 [[watch]]
 path_name = "Desktop Test"
-# emoji = "☠️"
 path = "~/Desktop/fangit-test"
 extensions = ["txt", "json"]
 action = "log"
 
+# Example: sync .txt files to git
 # [[watch]]
-# path_name = "Repo Folder Name"    # required — unique ID + repo subdirectory
-# emoji = "📁"				        # optional
-# path = "~/Desktop/path-to-watch"	# required – path to watch folder
-# extensions = ["txt", "json"]  	# optional – which files trigger fangit
-# action = "sync"                   # optional, "sync" [default; pushes watch folder 
-                                    # up to git] | "path name" disables sync and sends
-                                    # notification to [[channel]] = "path name"
+# path_name = "SMPLR-recipes"
+# path = "~/SMPLR/Stream"
+# extensions = ["txt"]
+# action = "sync"
+
+# Example: notify on .log files, only when errors occur
+# [[watch]]
+# path_name = "SMPLR-errors"
+# path = "~/SMPLR/Stream"
+# extensions = ["log"]
+# action = "error"
+# match = "ERROR|FATAL|SIGPIPE"
+
+# Example: notify on any log change, no filter
+# [[watch]]
+# path_name = "SMPLR-log"
+# path = "~/SMPLR/Stream"
+# extensions = ["log"]
+# action = "log"
+
+# Example: sync only when a regex matches
+# [[watch]]
+# path_name = "important-logs"
+# path = "~/myapp/logs"
+# extensions = ["log"]
+# action = "sync"
+# match = "CRITICAL|SHUTDOWN"
 
 
 # ─────────────────────────────────────────────────────────────────
 # ── Notification channels ────────────────────────────────────────
-# Notify mode: posts a message to a GitHub issue, no files involved.
+# Posts a message to a GitHub issue. No files, no git.
+# mode: "dispatch" (via GitHub Action, ~35s) | "direct" (API, ~20s)
+# action: "notify" | "notify+push"
+# Emoji reference: 🔴🟠🟡🟢🔵🟣⚪⚫🟤
 # ─────────────────────────────────────────────────────────────────
-#
-# mode = "dispatch"  -> via GitHub Action, single account (~35s)
-# mode = "direct"   -> direct API post, needs 2nd account (~20s)
-# 🔴🟠🟡🟢🔵🟣⚪⚫🟤
-# action = "notify"       -> notification only
-# action = "notify+push"  -> notification + push push_dir to repo
-# ─────────────────────────────────────────────────────────────────
-#
 
 [[channel]]
-path_name = "status"       		# required — unique descriptive channel ID
-issue = 1                  		# required – GitHub issue number to post to
-emoji = "🟢"		   		# optional
-mode = "dispatch"	   		# required – direct | dispatch
-action = "notify"	   		# required – notify | notify+push
+path_name = "status"
+issue = 1
+emoji = "🟢"
+mode = "dispatch"
+action = "notify"
 
 [[channel]]
 path_name = "error"
 issue = 2
 emoji = "🔴"
-mode = "dispatc"
+mode = "dispatch"
 action = "notify"
 
 [[channel]]

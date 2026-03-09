@@ -5,6 +5,9 @@
 #include <QMap>
 #include <QStringList>
 
+#include "FileScanner.h"
+#include "MessageFormatter.h"
+
 class GitManager;
 class ConfigManager;
 class NotifyManager;
@@ -12,7 +15,9 @@ class NotifyManager;
 struct PendingBatch {
     QString pathName;
     QString emoji;
-    QString action;     // "sync" / empty = git, or channel path_name = notify
+    QString action;
+    QString watchPath;
+    QString match;
     QStringList files;
 };
 
@@ -29,7 +34,8 @@ public:
 
 public slots:
     void enqueueFiles(const QString &pathName, const QString &emoji,
-                      const QString &action, const QStringList &files);
+                      const QString &action, const QString &watchPath,
+                      const QString &match, const QStringList &files);
 
 signals:
     void batchStarted();
@@ -43,15 +49,18 @@ private:
     bool isNotifyAction(const QString &action) const;
     void processSyncBatch(const PendingBatch &batch, bool &allSuccess);
     void processNotifyBatch(const PendingBatch &batch);
-    QString formatCommitMessage(const PendingBatch &batch) const;
-    QString formatNotifyMessage(const PendingBatch &batch) const;
     void copyFilesToRepo(const PendingBatch &batch);
 
     GitManager &m_git;
     ConfigManager &m_config;
     NotifyManager &m_notify;
+    FileScanner m_scanner;
+    MessageFormatter m_formatter;
     QTimer m_debounceTimer;
 
     // pathName -> pending batch
     QMap<QString, PendingBatch> m_pending;
+
+    // pathName -> file byte offsets (persistent across batches for tail reading)
+    QMap<QString, QMap<QString, qint64>> m_fileOffsets;
 };

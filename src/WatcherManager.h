@@ -25,7 +25,8 @@ public:
 
 signals:
     void filesChanged(const QString &pathName, const QString &emoji,
-                      const QString &action, const QStringList &files);
+                      const QString &action, const QString &watchPath,
+                      const QString &match, const QStringList &files);
     void watchError(const QString &pathName, const QString &error);
 
 private slots:
@@ -40,7 +41,8 @@ private:
 
     struct WatchInfo {
         WatchEntry entry;
-        QMap<QString, qint64> knownFiles; // path -> last modified timestamp
+        QMap<QString, qint64> knownFiles;   // path -> last modified timestamp
+        QMap<QString, qint64> fileOffsets;   // path -> last read byte offset (for scanning)
     };
 
     QMap<QString, WatchInfo> m_watches; // pathName -> info (keyed by pathName, not filesystem path)

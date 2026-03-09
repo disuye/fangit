@@ -66,6 +66,7 @@ void WatcherManager::addWatch(const WatchEntry &entry)
             continue;
 
         info.knownFiles[it.filePath()] = it.fileInfo().lastModified().toSecsSinceEpoch();
+        info.fileOffsets[it.filePath()] = it.fileInfo().size();  // start from current end
     }
 
     // Key by pathName — each watch gets its own entry even if paths overlap
@@ -197,6 +198,7 @@ void WatcherManager::scanDirectory(const QString &pathName)
 
     if (!changedFiles.isEmpty()) {
         qDebug() << "Changes detected in" << pathName << ":" << changedFiles.size() << "file(s)";
-        emit filesChanged(pathName, info.entry.emoji, info.entry.action, changedFiles);
+        emit filesChanged(pathName, info.entry.emoji, info.entry.action,
+                         info.entry.path, info.entry.match, changedFiles);
     }
 }

@@ -92,6 +92,8 @@ bool ConfigManager::load()
                         entry.emoji = QString::fromStdString(toml::find<std::string>(w, "emoji"));
                     if (w.contains("action"))
                         entry.action = QString::fromStdString(toml::find<std::string>(w, "action"));
+                    if (w.contains("match"))
+                        entry.match = QString::fromStdString(toml::find<std::string>(w, "match"));
                     if (w.contains("extensions")) {
                         auto exts = toml::find<std::vector<std::string>>(w, "extensions");
                         for (const auto &e : exts)
@@ -183,6 +185,8 @@ bool ConfigManager::save()
         out << "emoji = \"" << w.emoji << "\"\n";
         if (!w.action.isEmpty() && w.action != "sync")
             out << "action = \"" << w.action << "\"\n";
+        if (!w.match.isEmpty())
+            out << "match = \"" << w.match << "\"\n";
         if (!w.extensions.isEmpty()) {
             out << "extensions = [";
             for (int i = 0; i < w.extensions.size(); ++i) {
