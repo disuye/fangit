@@ -12,7 +12,7 @@
 #include "NotifyManager.h"
 #include "TrayManager.h"
 
-#define VERSION_STR "0.0.6"
+#define VERSION_STR "0.0.7"
 
 int main(int argc, char *argv[])
 {
@@ -66,6 +66,10 @@ int main(int argc, char *argv[])
     // Connect watcher to batcher
     QObject::connect(&watcherManager, &WatcherManager::filesChanged,
                      &commitBatcher, &CommitBatcher::enqueueFiles);
+    
+    // Connect batcher to watcher, don't notify user on first folder scan; only changes
+    QObject::connect(&watcherManager, &WatcherManager::initialFileOffsets,
+                    &commitBatcher, &CommitBatcher::seedOffsets);
 
     // System tray (owns the UI lifecycle)
     TrayManager trayManager(configManager, gitManager, watcherManager,

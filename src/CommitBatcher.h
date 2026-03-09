@@ -36,6 +36,8 @@ public slots:
     void enqueueFiles(const QString &pathName, const QString &emoji,
                       const QString &action, const QString &watchPath,
                       const QString &match, const QStringList &files);
+    
+    void seedOffsets(const QString &pathName, const QMap<QString, qint64> &offsets);
 
 signals:
     void batchStarted();

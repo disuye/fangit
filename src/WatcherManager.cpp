@@ -86,6 +86,8 @@ void WatcherManager::addWatch(const WatchEntry &entry)
              << "(" << info.knownFiles.size() << "existing files,"
              << "extensions:" << (entry.extensions.isEmpty() ? "all" : entry.extensions.join(","))
              << "action:" << (entry.action.isEmpty() ? "sync" : entry.action) << ")";
+    
+    emit initialFileOffsets(entry.pathName, info.fileOffsets);         
 }
 
 void WatcherManager::removeWatch(const QString &pathName)

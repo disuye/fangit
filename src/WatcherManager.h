@@ -27,7 +27,10 @@ signals:
     void filesChanged(const QString &pathName, const QString &emoji,
                       const QString &action, const QString &watchPath,
                       const QString &match, const QStringList &files);
+
     void watchError(const QString &pathName, const QString &error);
+
+    void initialFileOffsets(const QString &pathName, const QMap<QString, qint64> &offsets);
 
 private slots:
     void onDirectoryChanged(const QString &path);

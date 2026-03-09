@@ -27,6 +27,11 @@ int CommitBatcher::pendingCount() const
     return total;
 }
 
+void CommitBatcher::seedOffsets(const QString &pathName, const QMap<QString, qint64> &offsets)
+{
+    m_fileOffsets[pathName] = offsets;
+}
+
 void CommitBatcher::enqueueFiles(const QString &pathName, const QString &emoji,
                                   const QString &action, const QString &watchPath,
                                   const QString &match, const QStringList &files)
