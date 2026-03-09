@@ -139,7 +139,7 @@ void TrayManager::buildMenu()
         m_menu->addSeparator();
     }
 
-    QAction *openGH = m_menu->addAction("Open Github Repo");
+    QAction *openGH = m_menu->addAction("Open git repo");
     connect(openGH, &QAction::triggered, this, [this]() { onOpenGitHub(); });
 
     QAction *openConfig = m_menu->addAction("Open config.toml");

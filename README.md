@@ -282,7 +282,7 @@ Tray menu → Notify → channel name
 | **Notify** | Send a test notification to any configured channel |
 | **Push now** | Force immediate commit + push (skip debounce timer) |
 | **Pause/Resume** | Temporarily stop watching |
-| **Open GitHub Repo** | Open monitoring repo in browser |
+| **Open git repo** | Open monitoring repo in browser |
 | **Open config.toml** | Reveal config file (creates default if missing) |
 | **Quit** | Stop watching and exit |
 
