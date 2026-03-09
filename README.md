@@ -4,7 +4,7 @@
 
 Fast, zero-config local file watching → auto git commit → push → GitHub as the auth/notification/data layer.
 
-<div style="width: 100%; align: center;  max-width: 1000px">
+<div align="center" style="width: 100%; max-width: 1000px">
 <img src="./images/we-fangit.png" style="width: 100%; max-width: 1000px;">
 <br>
 <b>War Boy: "Shall we run them around into our backup?"<br>
