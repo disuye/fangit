@@ -12,7 +12,7 @@
 #include "NotifyManager.h"
 #include "TrayManager.h"
 
-#define VERSION_STR "0.0.4"
+#define VERSION_STR "0.0.5"
 
 int main(int argc, char *argv[])
 {
