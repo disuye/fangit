@@ -9,6 +9,8 @@ Fast, zero-config local file watching → auto git commit → push → GitHub as
 <b>War Boy: "Shall we run them around into our backup?"<br>
 Furiosa: "No, we're good. We fang it!"</b>
 
+## Modes
+
 Fangit has three modes:
 
 | Mode | What it does | Latency | Best for |
