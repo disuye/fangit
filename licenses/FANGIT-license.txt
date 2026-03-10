@@ -1,0 +1,38 @@
+# FANGIT-license.txt
+# Note: FANGIT is free / donationware
+# License:
+
+-----------------------------------------------------------
+FANGIT
+Copyright (c) 2025 Daniel Findlay / @disuye 
+All rights reserved.
+https://www.disuye.com
+-----------------------------------------------------------
+
+LICENSE
+
+FANGIT is free software provided at no cost (donationware). You may use FANGIT for any personal, educational, or commercial purpose without restriction. You may freely share unmodified copies of FANGIT with others.
+
+Please download FANGIT from the official repository:
+
+https://github.com/disuye/fangit
+
+Redistribution of FANGIT through package managers, app stores, software bundling, or mirror sites is not permitted without prior written consent from the author. This ensures that the author has some indication about download numbers, and that users always receive the latest version. You may not sell FANGIT or charge for its distribution. You may not distribute modified versions of FANGIT.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+THIRD-PARTY LICENSES
+
+Qt Framework
+FANGIT uses the Qt Toolkit (https://www.qt.io) under the terms of the GNU Lesser General Public License v3 (LGPLv3). Qt is dynamically linked and is not modified. The Qt source code is available at: https://download.qt.io/official_releases/qt/ See LGPLv3.txt and GPLv3.txt for the full license texts.
+
+Fira Code Font
+FANGIT includes the Fira Code font by The Fira Code Project Authors (https://github.com/tonsky/FiraCode), licensed under the SIL Open Font License v1.1. See FiraCode-OFL.txt for the full license text.
+
+DONATIONWARE
+
+If you enjoy FANGIT, and want to support the project, please consider buying some music from here:
+
+https://dan-f.bandcamp.com
+https://dyscopian.bandcamp.com
+https://smplr.bandcamp.com

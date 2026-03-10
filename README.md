@@ -11,6 +11,10 @@ Fast, zero-config local file watching → auto git commit → push → GitHub as
 <b>Furiosa:</b> "No, we're good. We fang it!"
 </div>
 
+<div align="center" style="width: 100%; max-width: 1000px">
+<img src="./images/AppIcon.png" style="width: 25%; max-width: 512px;">
+</div>
+
 ## Modes
 
 Fangit has three modes:
@@ -497,4 +501,6 @@ Yes. Qt6 provides QFileSystemWatcher (inotify backend) and QSystemTrayIcon. Buil
 
 ## License
 
-MIT
+MIT / TBC
+
+[Licenses](./licenses)
