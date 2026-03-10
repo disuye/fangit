@@ -1,0 +1,106 @@
+name: Build Linux
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+            qt_arch: linux_gcc_64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            qt_arch: linux_gcc_arm64
+
+    runs-on: ${{ matrix.runner }}
+    name: Linux ${{ matrix.arch }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        run: |
+          VERSION=$(sed -n 's/.*VERSION_STR "\([^"]*\)".*/\1/p' src/main.cpp)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Install Qt 6.7
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.3'
+          arch: ${{ matrix.qt_arch }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake ninja-build \
+            libgl1-mesa-dev libglu1-mesa-dev \
+            libxcb-cursor0 libxcb-cursor-dev \
+            libxkbcommon-dev libxkbcommon-x11-0 \
+            libfuse2t64
+
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake .. \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}"
+          ninja
+
+      - name: Create AppImage
+        run: |
+          cd build
+          DESTDIR=../AppDir ninja install
+          cd ..
+
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            DEPLOY_ARCH="aarch64"
+          else
+            DEPLOY_ARCH="x86_64"
+          fi
+
+          wget -q "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${DEPLOY_ARCH}.AppImage"
+          wget -q "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${DEPLOY_ARCH}.AppImage"
+          chmod +x *.AppImage
+
+          export APPIMAGE_EXTRACT_AND_RUN=1
+          export QMAKE="${QT_ROOT_DIR}/bin/qmake"
+          export LD_LIBRARY_PATH="${QT_ROOT_DIR}/lib:${LD_LIBRARY_PATH}"
+          export PATH="${QT_ROOT_DIR}/bin:${PATH}"
+
+          ./linuxdeploy-${DEPLOY_ARCH}.AppImage \
+            --appdir AppDir \
+            --plugin qt \
+            --desktop-file AppDir/usr/share/applications/fangit.desktop \
+            --icon-file AppDir/usr/share/icons/hicolor/512x512/apps/fangit.png \
+            --output appimage
+
+          mv fangit-*.AppImage fangitv${{ env.VERSION }}-linux-${{ matrix.arch }}.AppImage
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fangitv${{ env.VERSION }}-linux-${{ matrix.arch }}
+          path: 'fangitv*.AppImage'
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            fangitv*/*.AppImage
+          draft: true

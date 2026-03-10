@@ -62,6 +62,14 @@ if(APPLE)
     )
 else()
     qt_add_executable(fangit ${SOURCES})
+
+    # Linux install rules (used by AppImage packaging)
+    install(TARGETS fangit DESTINATION bin)
+    install(FILES "${CMAKE_SOURCE_DIR}/linux/fangit.desktop"
+            DESTINATION share/applications)
+    install(FILES "${CMAKE_SOURCE_DIR}/linux/AppIcon-512.png"
+            DESTINATION share/icons/hicolor/512x512/apps
+            RENAME fangit.png)
 endif()
 
 target_include_directories(fangit PRIVATE
