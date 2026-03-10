@@ -13,12 +13,12 @@ BUILD_TYPE="Debug"
 #----------------------------
 # Uncomment for latest macOS:
 #----------------------------
-QT_PATH="$HOME/Qt/6.10.1/macos"
+# QT_PATH="$HOME/Qt/6.10.1/macos"
 #----------------------------
 # Uncomment for legacy Linux:
 # + run scripts/dummyAGL.sh
 #----------------------------
-# QT_PATH="$HOME/Qt/6.7.3/macos"
+QT_PATH="$HOME/Qt/6.7.3/macos"
 
 
 # Parse arguments

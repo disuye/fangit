@@ -8,7 +8,8 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-QT_VERSION="6.10.1"
+# QT_VERSION="6.10.1"
+QT_VERSION="6.7.3"
 QT_PREFIX="$HOME/Qt/${QT_VERSION}/macos"
 MACDEPLOYQT="$QT_PREFIX/bin/macdeployqt"
 
