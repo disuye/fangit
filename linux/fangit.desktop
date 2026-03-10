@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=fangit
+Comment=File watching and GitHub notification system
+Exec=fangit
+Icon=fangit
+Categories=Utility;Development;
+Terminal=false
