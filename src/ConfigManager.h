@@ -53,6 +53,7 @@ public:
     void setScanInterval(int seconds);
     void addWatchEntry(const WatchEntry &entry);
     void removeWatchEntry(int index);
+    void addChannel(const NotifyChannel &channel);
 
     // Paths
     QString configFilePath() const;

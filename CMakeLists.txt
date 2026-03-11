@@ -41,6 +41,8 @@ set(SOURCES
     src/FileScanner.cpp
     src/MessageFormatter.h
     src/MessageFormatter.cpp
+    src/SetupWizard.h
+    src/SetupWizard.cpp
     src/resources.qrc
 )
 

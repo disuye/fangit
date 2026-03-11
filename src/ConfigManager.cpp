@@ -256,3 +256,9 @@ void ConfigManager::removeWatchEntry(int index)
         emit configChanged();
     }
 }
+
+void ConfigManager::addChannel(const NotifyChannel &channel)
+{
+    m_channels.append(channel);
+    emit configChanged();
+}
