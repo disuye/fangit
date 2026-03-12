@@ -10,6 +10,8 @@
 #include <QComboBox>
 #include <QPushButton>
 
+class QNetworkAccessManager;
+class QNetworkReply;
 class ConfigManager;
 class GitManager;
 class WorkflowManager;
@@ -136,13 +138,30 @@ public:
     void initializePage() override;
     bool isComplete() const override;
 private:
-    void runSetup();
+    void startSetup();
+    void stepRetrievePat();
+    void stepCheckNextIssue();
+    void stepCreateIssue(int issueNum, const QString &title);
+    void stepDispatchTest();
+    void finishSetup();
+
     GitManager &m_git;
     ConfigManager &m_config;
     WorkflowManager &m_workflow;
     QLabel *m_statusLabel;
     QTextEdit *m_logOutput;
     QProgressBar *m_progressBar;
+
+    QNetworkAccessManager *m_net = nullptr;
+    QString m_pat;
+    QString m_owner;
+    QString m_repo;
+    bool m_workflowOk = false;
+    int m_issueIndex = 0;
+
+    struct IssueTemplate { QString title; int num; };
+    QList<IssueTemplate> m_issues;
+
     bool m_success = false;
 };
 

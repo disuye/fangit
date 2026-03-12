@@ -21,7 +21,6 @@ using namespace WizardTheme;
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QEventLoop>
 
 // ════════════════════════════════════════════════════════════════════════════
 // SetupWizard
@@ -524,7 +523,7 @@ SetupRepoPage::SetupRepoPage(GitManager &git, ConfigManager &config,
     auto *layout = new QVBoxLayout(this);
 
     m_progressBar = new QProgressBar;
-    m_progressBar->setRange(0, 4);
+    m_progressBar->setRange(0, 0);   // indeterminate until first step completes
     layout->addWidget(m_progressBar);
 
     m_statusLabel = new QLabel("Preparing...");
@@ -538,43 +537,57 @@ SetupRepoPage::SetupRepoPage(GitManager &git, ConfigManager &config,
     layout->addWidget(m_logOutput);
 
     layout->addStretch();
+
+    m_issues = {{"Status", 1}, {"Errors", 2}, {"Log", 3}};
 }
 
 void SetupRepoPage::initializePage()
 {
-    runSetup();
+    startSetup();
 }
 
-void SetupRepoPage::runSetup()
+// ── Step 1: Push workflow (synchronous — local git, fast) ──────────
+
+void SetupRepoPage::startSetup()
 {
     m_success = false;
     m_logOutput->clear();
-    m_progressBar->setValue(0);
-    QApplication::processEvents();
+    m_progressBar->setRange(0, 0);  // indeterminate spinner
 
-    // ── Step 1: Push workflow ──────────────────────────────────────
     m_statusLabel->setText("Creating notification workflow...");
     m_logOutput->append("Creating .github/workflows/notify.yml...");
-    QApplication::processEvents();
 
-    bool workflowOk = m_workflow.ensureWorkflowExists();
-    m_progressBar->setValue(1);
-    m_logOutput->append(workflowOk
+    // Workflow push is local git — fast enough to stay synchronous
+    m_workflowOk = m_workflow.ensureWorkflowExists();
+    m_logOutput->append(m_workflowOk
         ? "\xe2\x9c\x93 Workflow created and pushed."
         : "\xe2\x9c\x97 Workflow creation failed (you can create it manually later).");
-    QApplication::processEvents();
 
-    // ── Step 2: Retrieve PAT for issue creation ───────────────────
+    // Now switch to stepped progress: workflow(done) + 3 issues + test = 5 steps
+    m_progressBar->setRange(0, 5);
+    m_progressBar->setValue(1);
+
+    stepRetrievePat();
+}
+
+// ── Step 2: Retrieve PAT (synchronous — local credential helper) ───
+
+void SetupRepoPage::stepRetrievePat()
+{
+    m_statusLabel->setText("Checking credentials...");
+    m_logOutput->append("");
+    m_logOutput->append("Retrieving credentials from keychain...");
+
     QProcess process;
     process.start("git", {"credential", "fill"});
-    QString pat;
+    m_pat.clear();
     if (process.waitForStarted(3000)) {
         process.write("protocol=https\nhost=github.com\n\n");
         process.closeWriteChannel();
         if (process.waitForFinished(5000)) {
             for (const auto &line : QString::fromUtf8(process.readAllStandardOutput()).split('\n')) {
                 if (line.startsWith("password=")) {
-                    pat = line.mid(9).trimmed();
+                    m_pat = line.mid(9).trimmed();
                     break;
                 }
             }
@@ -583,129 +596,165 @@ void SetupRepoPage::runSetup()
 
     // Parse owner/repo
     QString url = m_config.repoUrl();
-    QString owner, repo;
+    m_owner.clear();
+    m_repo.clear();
     if (url.startsWith("https://github.com/")) {
         QStringList parts = url.mid(19).split('/');
         if (parts.size() >= 2) {
-            owner = parts[0];
-            repo = parts[1];
-            if (repo.endsWith(".git")) repo.chop(4);
+            m_owner = parts[0];
+            m_repo = parts[1];
+            if (m_repo.endsWith(".git")) m_repo.chop(4);
         }
     }
 
-    // ── Step 3: Create issues ─────────────────────────────────────
-    m_statusLabel->setText("Creating notification issues...");
-    m_logOutput->append("");
-    m_logOutput->append("Creating GitHub issues...");
-    m_progressBar->setValue(2);
-    QApplication::processEvents();
-
-    struct IssueTemplate { QString title; int num; };
-    QList<IssueTemplate> issues = {
-        {"Status", 1}, {"Errors", 2}, {"Log", 3}
-    };
-
-    if (!pat.isEmpty() && !owner.isEmpty()) {
-        QNetworkAccessManager net;
-
-        for (const auto &tmpl : issues) {
-            // Check existence first
-            QNetworkRequest req(QUrl(QString(
-                "https://api.github.com/repos/%1/%2/issues/%3")
-                .arg(owner, repo).arg(tmpl.num)));
-            req.setRawHeader("Authorization", ("token " + pat).toUtf8());
-            req.setRawHeader("User-Agent", "fangit");
-
-            QEventLoop loop;
-            auto *reply = net.get(req);
-            connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-            loop.exec();
-            int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            reply->deleteLater();
-
-            if (status == 200) {
-                m_logOutput->append(QString("  \xe2\x9c\x93 Issue #%1 \"%2\" already exists")
-                    .arg(tmpl.num).arg(tmpl.title));
-                continue;
-            }
-
-            // Create it
-            QNetworkRequest createReq(QUrl(QString(
-                "https://api.github.com/repos/%1/%2/issues").arg(owner, repo)));
-            createReq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-            createReq.setRawHeader("Authorization", ("token " + pat).toUtf8());
-            createReq.setRawHeader("User-Agent", "fangit");
-
-            QJsonObject body;
-            body["title"] = tmpl.title;
-            body["body"]  = "fangit notification channel. Do not close this issue.";
-
-            QEventLoop cLoop;
-            auto *cReply = net.post(createReq, QJsonDocument(body).toJson());
-            connect(cReply, &QNetworkReply::finished, &cLoop, &QEventLoop::quit);
-            cLoop.exec();
-            int cStatus = cReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            cReply->deleteLater();
-
-            m_logOutput->append(cStatus >= 200 && cStatus < 300
-                ? QString("  \xe2\x9c\x93 Created issue #%1 \"%2\"").arg(tmpl.num).arg(tmpl.title)
-                : QString("  \xe2\x9c\x97 Failed to create \"%1\" (HTTP %2)").arg(tmpl.title).arg(cStatus));
-            QApplication::processEvents();
-        }
-    } else {
+    if (m_pat.isEmpty() || m_owner.isEmpty()) {
         m_logOutput->append("  \xe2\x9a\xa0\xef\xb8\x8f Could not create issues (no PAT in keychain yet).");
         m_logOutput->append("  Create them manually in your GitHub repo:");
         m_logOutput->append("    Issue #1: \"Status\"");
         m_logOutput->append("    Issue #2: \"Errors\"");
         m_logOutput->append("    Issue #3: \"Log\"");
+
+        // Skip issue creation and test dispatch — jump to done
+        m_progressBar->setValue(5);
+        finishSetup();
+        return;
     }
 
-    m_progressBar->setValue(3);
+    m_logOutput->append("\xe2\x9c\x93 Credentials found.");
 
-    // ── Step 4: Send test notification ────────────────────────────
-    if (!pat.isEmpty() && !owner.isEmpty() && workflowOk) {
-        m_statusLabel->setText("Sending test notification...");
-        m_logOutput->append("");
-        m_logOutput->append("Dispatching test notification via GitHub Actions...");
-        QApplication::processEvents();
+    // Create the network manager for all subsequent async calls
+    if (!m_net) {
+        m_net = new QNetworkAccessManager(this);
+    }
 
-        QString user = field("github_user").toString().trimmed();
-        QNetworkAccessManager net2;
-        QNetworkRequest dispReq(QUrl(QString(
-            "https://api.github.com/repos/%1/%2/actions/workflows/notify.yml/dispatches")
-            .arg(owner, repo)));
-        dispReq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        dispReq.setRawHeader("Authorization", ("token " + pat).toUtf8());
-        dispReq.setRawHeader("User-Agent", "fangit");
+    // Start issue creation chain
+    m_statusLabel->setText("Creating notification issues...");
+    m_logOutput->append("");
+    m_logOutput->append("Creating GitHub issues...");
+    m_issueIndex = 0;
+    stepCheckNextIssue();
+}
 
-        QJsonObject inputs;
-        inputs["channel"]     = "status";
-        inputs["issue"]       = "1";
-        inputs["message"]     = "\xF0\x9F\x8E\x89 fangit setup complete!";
-        inputs["github_user"] = user;
+// ── Step 3: Check/create issues (async chain) ─────────────────────
 
-        QJsonObject dispBody;
-        dispBody["ref"]    = m_config.repoBranch();
-        dispBody["inputs"] = inputs;
+void SetupRepoPage::stepCheckNextIssue()
+{
+    if (m_issueIndex >= m_issues.size()) {
+        // All issues processed — move to test dispatch
+        stepDispatchTest();
+        return;
+    }
 
-        QEventLoop dLoop;
-        auto *dReply = net2.post(dispReq, QJsonDocument(dispBody).toJson());
-        connect(dReply, &QNetworkReply::finished, &dLoop, &QEventLoop::quit);
-        dLoop.exec();
-        int dStatus = dReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        dReply->deleteLater();
+    const auto &tmpl = m_issues[m_issueIndex];
 
-        if (dStatus >= 200 && dStatus < 300) {
+    QNetworkRequest req(QUrl(QString(
+        "https://api.github.com/repos/%1/%2/issues/%3")
+        .arg(m_owner, m_repo).arg(tmpl.num)));
+    req.setRawHeader("Authorization", ("token " + m_pat).toUtf8());
+    req.setRawHeader("User-Agent", "fangit");
+
+    QNetworkReply *reply = m_net->get(req);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, tmpl]() {
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        reply->deleteLater();
+
+        if (status == 200) {
+            m_logOutput->append(QString("  \xe2\x9c\x93 Issue #%1 \"%2\" already exists")
+                .arg(tmpl.num).arg(tmpl.title));
+            m_progressBar->setValue(2 + m_issueIndex);
+            m_issueIndex++;
+            stepCheckNextIssue();
+        } else {
+            // Issue doesn't exist — create it
+            stepCreateIssue(tmpl.num, tmpl.title);
+        }
+    });
+}
+
+void SetupRepoPage::stepCreateIssue(int issueNum, const QString &title)
+{
+    QNetworkRequest createReq(QUrl(QString(
+        "https://api.github.com/repos/%1/%2/issues").arg(m_owner, m_repo)));
+    createReq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    createReq.setRawHeader("Authorization", ("token " + m_pat).toUtf8());
+    createReq.setRawHeader("User-Agent", "fangit");
+
+    QJsonObject body;
+    body["title"] = title;
+    body["body"]  = "fangit notification channel. Do not close this issue.";
+
+    QNetworkReply *reply = m_net->post(createReq, QJsonDocument(body).toJson());
+    connect(reply, &QNetworkReply::finished, this, [this, reply, issueNum, title]() {
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        reply->deleteLater();
+
+        m_logOutput->append(status >= 200 && status < 300
+            ? QString("  \xe2\x9c\x93 Created issue #%1 \"%2\"").arg(issueNum).arg(title)
+            : QString("  \xe2\x9c\x97 Failed to create \"%1\" (HTTP %2)").arg(title).arg(status));
+
+        m_progressBar->setValue(2 + m_issueIndex);
+        m_issueIndex++;
+        stepCheckNextIssue();
+    });
+}
+
+// ── Step 4: Dispatch test notification (async) ────────────────────
+
+void SetupRepoPage::stepDispatchTest()
+{
+    m_progressBar->setValue(4);
+
+    if (!m_workflowOk) {
+        // Can't dispatch without workflow
+        finishSetup();
+        return;
+    }
+
+    m_statusLabel->setText("Sending test notification...");
+    m_logOutput->append("");
+    m_logOutput->append("Dispatching test notification via GitHub Actions...");
+
+    QString user = field("github_user").toString().trimmed();
+
+    QNetworkRequest dispReq(QUrl(QString(
+        "https://api.github.com/repos/%1/%2/actions/workflows/notify.yml/dispatches")
+        .arg(m_owner, m_repo)));
+    dispReq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    dispReq.setRawHeader("Authorization", ("token " + m_pat).toUtf8());
+    dispReq.setRawHeader("User-Agent", "fangit");
+
+    QJsonObject inputs;
+    inputs["channel"]     = "status";
+    inputs["issue"]       = "1";
+    inputs["message"]     = "\xF0\x9F\x8E\x89 fangit setup complete!";
+    inputs["github_user"] = user;
+
+    QJsonObject dispBody;
+    dispBody["ref"]    = m_config.repoBranch();
+    dispBody["inputs"] = inputs;
+
+    QNetworkReply *reply = m_net->post(dispReq, QJsonDocument(dispBody).toJson());
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        reply->deleteLater();
+
+        if (status >= 200 && status < 300) {
             m_logOutput->append("\xe2\x9c\x93 Test notification dispatched!");
             m_logOutput->append("  Check your phone in ~30-60 seconds.");
         } else {
             m_logOutput->append(QString("\xe2\x9c\x97 Dispatch failed (HTTP %1). "
-                "You can test later from the tray menu.").arg(dStatus));
+                "You can test later from the tray menu.").arg(status));
         }
-    }
 
-    m_progressBar->setValue(4);
+        finishSetup();
+    });
+}
 
+// ── Done ──────────────────────────────────────────────────────────
+
+void SetupRepoPage::finishSetup()
+{
+    m_progressBar->setValue(5);
     m_success = true;
     m_statusLabel->setText("\xe2\x9c\x93  Repository setup complete");
     m_statusLabel->setStyleSheet(statusStyle(Color::success));
