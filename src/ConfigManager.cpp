@@ -37,6 +37,9 @@ bool ConfigManager::load()
         qDebug() << "No config file found at" << path << "— first launch";
         return false;
     }
+    // Clear in-memory state so reload doesn't duplicate
+    m_watchEntries.clear();
+    m_channels.clear();
 
     try {
         auto data = toml::parse(path.toStdString());

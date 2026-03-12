@@ -14,7 +14,7 @@
 #include "TrayManager.h"
 #include "SetupWizard.h"
 
-#define VERSION_STR "0.0.9"
+#define VERSION_STR "0.0.10"
 
 int main(int argc, char *argv[])
 {
