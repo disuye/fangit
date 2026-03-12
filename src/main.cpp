@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
                 QMessageBox::information(nullptr, "fangit",
                     "Setup was cancelled.\n\n"
                     "fangit will start in the menu bar but won't do anything "
-                    "until configured. Click the tray icon \xe2\x86\x92 'Open config.toml' "
+                    "until configured. \n\nClick the tray icon \xe2\x86\x92 'Open config.toml' "
                     "to configure manually, or restart fangit to run the wizard again.");
             }
         }

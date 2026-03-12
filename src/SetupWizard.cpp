@@ -1,7 +1,10 @@
 #include "SetupWizard.h"
+#include "SetupWizardTheme.h"
 #include "ConfigManager.h"
 #include "GitManager.h"
 #include "WorkflowManager.h"
+
+using namespace WizardTheme;
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -117,7 +120,7 @@ WelcomePage::WelcomePage(QWidget *parent) : QWizardPage(parent)
         "<p><b>Fang it!</b> watches folders on your computer and sends push "
         "notifications to your phone via GitHub.</p>"
         "<p>To get started you'll need:</p>"
-        "<ul style='margin-left: 16px;'>"
+        "<ul style='margin-left: " + QString::number(Spacing::statusPad * 2) + "px;'>"
         "<li>A <b>GitHub account</b> (free)</li>"
         "<li>The <b>GitHub mobile app</b> on your phone with notifications enabled</li>"
         "<li><b>git</b> installed on this computer</li>"
@@ -142,7 +145,7 @@ GitCheckPage::GitCheckPage(GitManager &git, QWidget *parent)
     auto *layout = new QVBoxLayout(this);
 
     m_statusLabel = new QLabel("Checking...");
-    m_statusLabel->setStyleSheet("font-size: 14px; padding: 10px;");
+    m_statusLabel->setStyleSheet(statusStyle(Spacing::statusPadLarge));
     layout->addWidget(m_statusLabel);
 
     m_helpLabel = new QLabel;
@@ -160,11 +163,11 @@ void GitCheckPage::initializePage()
 
     if (m_gitFound) {
         m_statusLabel->setText("\xe2\x9c\x93  " + m_git.gitVersion());
-        m_statusLabel->setStyleSheet("font-size: 14px; padding: 10px; color: #4CAF50;");
+        m_statusLabel->setStyleSheet(statusStyle(Color::success, Spacing::statusPadLarge));
         m_helpLabel->setVisible(false);
     } else {
         m_statusLabel->setText("\xe2\x9c\x97  git not found");
-        m_statusLabel->setStyleSheet("font-size: 14px; padding: 10px; color: #F44336;");
+        m_statusLabel->setStyleSheet(statusStyle(Color::error, Spacing::statusPadLarge));
         m_helpLabel->setText(
 #ifdef Q_OS_MACOS
             "<p>Open <b>Terminal</b> and run:</p>"
@@ -195,7 +198,7 @@ GitHubPage::GitHubPage(QWidget *parent) : QWizardPage(parent)
 
     auto *layout = new QVBoxLayout(this);
 
-    layout->addWidget(new QLabel("GitHub username:"));
+    layout->addWidget(new QLabel("GitHub username to notify:"));
 
     m_usernameEdit = new QLineEdit;
     m_usernameEdit->setPlaceholderText("e.g. yourname");
@@ -203,11 +206,12 @@ GitHubPage::GitHubPage(QWidget *parent) : QWizardPage(parent)
 
     registerField("github_user*", m_usernameEdit);
 
+    layout->addStretch();
     auto *help = new QLabel(
-        "<p style='color: #888; font-size: 12px;'>"
-        "Don't have a GitHub account? "
-        "<a href='https://github.com/signup'>Create one here</a> — it's free."
-        "</p>"
+        mutedHtml(
+            "Don't have a GitHub account? "
+            "<a href='https://github.com/signup'>Create one here</a> — it's free."
+        )
     );
     help->setOpenExternalLinks(true);
     help->setWordWrap(true);
@@ -228,15 +232,16 @@ bool GitHubPage::isComplete() const
 RepoPage::RepoPage(QWidget *parent) : QWizardPage(parent)
 {
     setTitle("GitHub Repository");
-    setSubTitle("fangit needs a repository to store files and post notifications.");
+    setSubTitle("fangit needs an empty repository to store files and route notifications.");
 
     auto *layout = new QVBoxLayout(this);
 
     auto *step1 = new QLabel(
         "<p><b>Step 1:</b> Create a new <b>private</b> repository on GitHub.</p>"
         "<p><a href='https://github.com/new'>Click here to create one</a></p>"
-        "<p style='color: #888; font-size: 12px;'>"
-        "Name it anything (e.g. \"my-fangit\"). Make sure it's <b>Private</b>.</p>"
+        + mutedHtml(
+            "Name it anything (e.g. \"my-fangit\"). Make sure it's <b>Private</b>."
+        )
     );
     step1->setOpenExternalLinks(true);
     step1->setWordWrap(true);
@@ -280,15 +285,12 @@ AuthPage::AuthPage(QWidget *parent) : QWizardPage(parent)
     auto *layout = new QVBoxLayout(this);
 
     m_statusLabel = new QLabel("Checking for existing credentials...");
-    m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px;");
+    m_statusLabel->setStyleSheet(statusStyle());
     layout->addWidget(m_statusLabel);
 
     // ── Privacy notice (always visible) ────────────────────────────
     m_privacyLabel = new QLabel(
-        "<p style='"
-        "background: #2D2D1F; color: #E8D44D; "
-        "padding: 10px; border-radius: 6px; font-size: 12px;'>"
-        "\xF0\x9F\x94\x92 <b>Your credentials stay on this computer.</b> "
+        "<p><b>Your credentials stay on this computer.\n\n</b> "
         "git stores them in the system keychain "
 #ifdef Q_OS_MACOS
         "(macOS Keychain). "
@@ -298,6 +300,7 @@ AuthPage::AuthPage(QWidget *parent) : QWizardPage(parent)
         "fangit never stores passwords in its config file and never sends "
         "credentials anywhere other than github.com.</p>"
     );
+    m_privacyLabel->setStyleSheet(privacyBoxStyle());
     m_privacyLabel->setWordWrap(true);
     layout->addWidget(m_privacyLabel);
 
@@ -359,7 +362,7 @@ void AuthPage::detectCredentials()
     if (!process.waitForStarted(3000)) {
         m_credentialsDetected = false;
         m_statusLabel->setText("\xe2\x9a\xa0\xef\xb8\x8f  Could not check credentials");
-        m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px; color: #FF9800;");
+        m_statusLabel->setStyleSheet(statusStyle(Color::warning));
         return;
     }
 
@@ -397,14 +400,14 @@ void AuthPage::detectCredentials()
     if (found) {
         m_statusLabel->setText(
             "\xe2\x9c\x93  Existing GitHub credentials found. fangit will use these automatically.");
-        m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px; color: #4CAF50;");
+        m_statusLabel->setStyleSheet(statusStyle(Color::success));
         m_patInstructions->setVisible(false);
         m_openGitHubBtn->setVisible(false);
         if (m_openKeychainBtn) m_openKeychainBtn->setVisible(false);
     } else {
         m_statusLabel->setText(
             "No existing GitHub credentials detected. Follow the steps below.");
-        m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px; color: #FF9800;");
+        m_statusLabel->setStyleSheet(statusStyle(Color::warning));
         m_patInstructions->setVisible(true);
         m_openGitHubBtn->setVisible(true);
         if (m_openKeychainBtn) m_openKeychainBtn->setVisible(true);
@@ -436,15 +439,13 @@ TestConnectionPage::TestConnectionPage(GitManager &git, ConfigManager &config,
     layout->addWidget(m_progressBar);
 
     m_statusLabel = new QLabel("Preparing...");
-    m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px;");
+    m_statusLabel->setStyleSheet(statusStyle());
     layout->addWidget(m_statusLabel);
 
     m_logOutput = new QTextEdit;
     m_logOutput->setReadOnly(true);
     m_logOutput->setMaximumHeight(140);
-    m_logOutput->setStyleSheet(
-        "font-family: 'Fira Code', monospace; font-size: 11px; "
-        "background: #1E1E1E; color: #CCCCCC; padding: 8px; border-radius: 4px;");
+    m_logOutput->setStyleSheet(logOutputStyle());
     layout->addWidget(m_logOutput);
 
     m_retryBtn = new QPushButton("Retry");
@@ -472,7 +473,7 @@ void TestConnectionPage::runTest()
     m_logOutput->clear();
     m_progressBar->setRange(0, 0);
     m_statusLabel->setText("Cloning repository...");
-    m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px;");
+    m_statusLabel->setStyleSheet(statusStyle());
     QApplication::processEvents();
 
     m_logOutput->append("$ git clone " + m_config.repoUrl());
@@ -498,10 +499,10 @@ void TestConnectionPage::runTest()
 
     if (m_success) {
         m_statusLabel->setText("\xe2\x9c\x93  Connected to repository");
-        m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px; color: #4CAF50;");
+        m_statusLabel->setStyleSheet(statusStyle(Color::success));
     } else {
         m_statusLabel->setText("\xe2\x9c\x97  Connection failed");
-        m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px; color: #F44336;");
+        m_statusLabel->setStyleSheet(statusStyle(Color::error));
         m_retryBtn->setVisible(true);
     }
     emit completeChanged();
@@ -527,15 +528,13 @@ SetupRepoPage::SetupRepoPage(GitManager &git, ConfigManager &config,
     layout->addWidget(m_progressBar);
 
     m_statusLabel = new QLabel("Preparing...");
-    m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px;");
+    m_statusLabel->setStyleSheet(statusStyle());
     layout->addWidget(m_statusLabel);
 
     m_logOutput = new QTextEdit;
     m_logOutput->setReadOnly(true);
     m_logOutput->setMaximumHeight(180);
-    m_logOutput->setStyleSheet(
-        "font-family: 'Fira Code', monospace; font-size: 11px; "
-        "background: #1E1E1E; color: #CCCCCC; padding: 8px; border-radius: 4px;");
+    m_logOutput->setStyleSheet(logOutputStyle());
     layout->addWidget(m_logOutput);
 
     layout->addStretch();
@@ -709,7 +708,7 @@ void SetupRepoPage::runSetup()
 
     m_success = true;
     m_statusLabel->setText("\xe2\x9c\x93  Repository setup complete");
-    m_statusLabel->setStyleSheet("font-size: 14px; padding: 8px; color: #4CAF50;");
+    m_statusLabel->setStyleSheet(statusStyle(Color::success));
     emit completeChanged();
 }
 
@@ -808,7 +807,7 @@ void DonePage::initializePage()
                  && !field("watch_path").toString().trimmed().isEmpty();
 
     QString s =
-        "<h3>\xF0\x9F\x8E\x89 fangit is ready!</h3>"
+        "<h3>fangit is ready!</h3>"
         "<p><b>GitHub user:</b> @" + user + "</p>"
         "<p><b>Repository:</b> " + repo + "</p>";
 
@@ -825,8 +824,9 @@ void DonePage::initializePage()
         "<li>And make sure you install the <a href='https://apps.apple.com/app/github/id1477376905'>GitHub mobile app</a> "
         "on your phone and enable notifications both in app and phone settings!</li>"
         "</ol>"
-        "<p style='color: #888; font-size: 12px;'>"
-        "To run this wizard again, move or delete config.toml and restart fangit.</p>";
+        + mutedHtml(
+            "To run this wizard again, move or delete config.toml and restart fangit."
+        );
 
     m_summaryLabel->setText(s);
 }

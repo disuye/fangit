@@ -42,6 +42,7 @@ set(SOURCES
     src/MessageFormatter.h
     src/MessageFormatter.cpp
     src/SetupWizard.h
+    src/SetupWizardTheme.h
     src/SetupWizard.cpp
     src/resources.qrc
 )
